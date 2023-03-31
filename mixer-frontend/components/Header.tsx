@@ -85,7 +85,7 @@ const Header = () => {
     } else if (!data) {
       toast.error("Connect Your Wallet.");
     } else {
-      toast.success(`Welcome ${ellipseAddress(data?.address)} !!`);
+      toast.success(`Welcome ${ellipseAddress(data?.address as string)} !!`);
       //getAdmin()
     }
     setDone(true);

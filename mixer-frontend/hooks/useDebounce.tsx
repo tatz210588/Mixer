@@ -5,17 +5,17 @@ import {
   useState,
 } from 'react'
 
-const useDebounce = (callback, delay: number) => {
+const useDebounce = (callback:any, delay: number) => {
   let [timer, setTimer] = useState(null)
   const cb = useCallback(callback, [])
 
-  const debounce = async (...args) => {
-    clearTimeout(timer)
-    setTimer(setTimeout(() => cb(...args), delay))
+  const debounce = async (...args:any) => {
+    clearTimeout(timer as any)
+    //setTimer(setTimeout(() => cb(...args as any), delay))
   }
 
   useEffect(() => {
-    return () => clearTimeout(timer)
+    return () => clearTimeout(timer as any)
   }, [])
 
   // useDebugValue({ cb, timer, delay })

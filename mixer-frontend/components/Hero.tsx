@@ -317,59 +317,54 @@ const Pay = () => {
           <div className={style.contentWrapper}>
             <div className={style.glowDivBox}>
               <div className="relative h-[full] w-[95%] justify-center rounded-lg bg-lime-100	 px-7 py-9  text-center leading-none lg:w-full">
-                {1 === 2 ? (
-                  <div className="mx-auto flex flex-wrap text-center ">
-                    <ConnectButton label="Connect Your Wallet And Start Sending Crypto" />
+                <>
+                  <div className={style.details}>
+                    <span className="flex flex-wrap justify-center space-x-5 ">
+                      <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
+                        Deposit Crypto
+                      </span>
+                    </span>
+                    <span className="flex flex-wrap items-center justify-center space-x-5">
+                      <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
+                        Start Mixing
+                      </span>
+                    </span>
                   </div>
-                ) : (
-                  <>
-                    <div className={style.details}>
-                      <span className="flex flex-wrap justify-center space-x-5 ">
-                        <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
-                          Deposit Crypto
-                        </span>
-                      </span>
-                      <span className="flex flex-wrap items-center justify-center space-x-5">
-                        <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
-                          Start Mixing
-                        </span>
-                      </span>
-                    </div>
 
-                    <div className="font-bold drop-shadow-xl">
-                      <div className={style.info}>
-                        <div className={style.infoLeft}>
-                          <div className="mt-4 mb-2 ml-5 text-sm font-bold text-[#000000]">
-                            Choose Cryptocurrency:
-                          </div>
+                  <div className="font-bold drop-shadow-xl">
+                    <div className={style.info}>
+                      <div className={style.infoLeft}>
+                        <div className="mt-4 mb-2 ml-5 text-sm font-bold text-[#000000]">
+                          Choose Cryptocurrency:
                         </div>
                       </div>
-                      <select
-                        className={style.dropDown}
-                        onChange={async (e) => {
-                          const selectedValue = Number(e.target.value);
-                          let token: TokenInfo | undefined;
-                          if (selectedValue) {
-                            token = availableTokens[Number(selectedValue)];
-                            setSelectedOption(token.name);
-                            setTokenAddr(token.address);
-                          }
-                          //await loadBalance(token);
-                        }}
-                      >
-                        {availableTokens?.map(
-                          (token: TokenInfo, index: number) => (
-                            <option
-                              className={style.option}
-                              value={index}
-                              key={token.address}
-                            >
-                              {token.name}
-                            </option>
-                          )
-                        )}
-                      </select>
-                      {/* <div className={style.info}>
+                    </div>
+                    <select
+                      className={style.dropDown}
+                      onChange={async (e) => {
+                        const selectedValue = Number(e.target.value);
+                        let token: TokenInfo | undefined;
+                        if (selectedValue) {
+                          token = availableTokens[Number(selectedValue)];
+                          setSelectedOption(token.name);
+                          setTokenAddr(token.address);
+                        }
+                        //await loadBalance(token);
+                      }}
+                    >
+                      {availableTokens?.map(
+                        (token: TokenInfo, index: number) => (
+                          <option
+                            className={style.option}
+                            value={index}
+                            key={token.address}
+                          >
+                            {token.name}
+                          </option>
+                        )
+                      )}
+                    </select>
+                    {/* <div className={style.info}>
                         <div className={style.infoLeft}>
                           <div className="text-sm font-normal text-[#000000] ">
                             <span className="label-rm">Balance:</span>
@@ -377,93 +372,89 @@ const Pay = () => {
                           </div>
                         </div>
                       </div> */}
-                      <div className={style.info}>
-                        <div className={style.infoLeft}>
-                          <div className="mt-4 text-sm font-bold text-[#000000]">
-                            Transfer To:
-                          </div>
+                    <div className={style.info}>
+                      <div className={style.infoLeft}>
+                        <div className="mt-4 text-sm font-bold text-[#000000]">
+                          Transfer To:
                         </div>
                       </div>
-                      <div className={style.searchBar}>
-                        <input
-                          type="text"
-                          className={style.searchInput}
-                          placeholder=""
-                          value={formInput.target}
-                          onChange={(e) =>
-                            updateFormInput((formInput) => ({
-                              ...formInput,
-                              target: e.target.value,
-                            }))
-                          }
-                        />
-                      </div>
+                    </div>
+                    <div className={style.searchBar}>
+                      <input
+                        type="text"
+                        className={style.searchInput}
+                        placeholder=""
+                        value={formInput.target}
+                        onChange={(e) =>
+                          updateFormInput((formInput) => ({
+                            ...formInput,
+                            target: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
 
-                      <div className={style.info}>
-                        <div className={style.infoLeft}>
-                          <div className="mt-4 text-sm font-bold text-[#000000]">
-                            Amount To Transfer:
-                          </div>
+                    <div className={style.info}>
+                      <div className={style.infoLeft}>
+                        <div className="mt-4 text-sm font-bold text-[#000000]">
+                          Amount To Transfer:
                         </div>
                       </div>
-                      <div className={style.searchBar}>
-                        {/* <InputIcon
+                    </div>
+                    <div className={style.searchBar}>
+                      {/* <InputIcon
                           className="input-icon"
                           Icon={FaMoneyBillWave}
                         /> */}
-                        <input
-                          type="number"
-                          className={style.searchInput}
-                          placeholder="Amount to transfer"
-                          value={formInput.amount}
-                          onChange={(e) =>
-                            updateFormInput((formInput) => ({
-                              ...formInput,
-                              amount: Number(e.target.value),
-                            }))
-                          }
-                        />
-                        <button
-                          type="button"
-                          onClick={(_) =>
-                            updateFormInput((formInput) => ({
-                              ...formInput,
-                              amount: 0.0,
-                            }))
-                          }
-                        >
-                          <InputIcon
-                            className="input-icon"
-                            Icon={FaBackspace}
-                          />
-                        </button>
-                      </div>
-
-                      {loadingState === true ? (
-                        <BusyLoader
-                          loaderType={LoaderType.Beat}
-                          wrapperClass="white-busy-container"
-                          className="white-busy-container"
-                          color={"#000000"}
-                          size={15}
-                        >
-                          <div className={style.description}>
-                            {" "}
-                            Connecting to blockchain. Please wait
-                          </div>
-                        </BusyLoader>
-                      ) : (
-                        <button
-                          type="submit"
-                          onClick={transfer}
-                          className={style.nftButton}
-                        >
-                          Deposit
-                        </button>
-                      )}
+                      <input
+                        type="number"
+                        className={style.searchInput}
+                        placeholder="Amount to transfer"
+                        value={formInput.amount}
+                        onChange={(e) =>
+                          updateFormInput((formInput) => ({
+                            ...formInput,
+                            amount: Number(e.target.value),
+                          }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={(_) =>
+                          updateFormInput((formInput) => ({
+                            ...formInput,
+                            amount: 0.0,
+                          }))
+                        }
+                      >
+                        <InputIcon className="input-icon" Icon={FaBackspace} />
+                      </button>
                     </div>
-                  </>
-                )}
+
+                    {loadingState === true ? (
+                      <BusyLoader
+                        loaderType={LoaderType.Beat}
+                        wrapperClass="white-busy-container"
+                        className="white-busy-container"
+                        color={"#000000"}
+                        size={15}
+                      >
+                        <div className={style.description}>
+                          {" "}
+                          Connecting to blockchain. Please wait
+                        </div>
+                      </BusyLoader>
+                    ) : (
+                      <button
+                        type="submit"
+                        onClick={transfer}
+                        className={style.nftButton}
+                      >
+                        Deposit
+                      </button>
+                    )}
+                  </div>
+                </>
               </div>
             </div>
 
