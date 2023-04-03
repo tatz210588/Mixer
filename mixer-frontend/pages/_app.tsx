@@ -7,13 +7,13 @@ import * as globeLoaderData from "../assets/globe.json";
 import * as successLoaderData from "../assets/success.json";
 import { AppProps } from "next/app";
 import { Toaster } from "react-hot-toast";
-import { WagmiConfig, configureChains, chain, createClient } from "wagmi";
+import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import {
   getDefaultWallets,
   RainbowKitProvider,
   connectorsForWallets,
-  wallet,
+  // wallet,
   Chain,
   darkTheme,
   lightTheme,
@@ -52,7 +52,8 @@ const BRISE_Mainnet: Chain = {
     symbol: "BRISE",
   },
   rpcUrls: {
-    default: "https://mainnet-rpc.brisescan.com",
+    public: { http: ['https://mainnet-rpc.brisescan.comc'] },
+    default: { http: ['https://mainnet-rpc.brisescan.comc'] },
   },
   blockExplorers: {
     default: {
@@ -75,7 +76,8 @@ const Binance_mainnet: Chain = {
     symbol: "BSC",
   },
   rpcUrls: {
-    default: "https://bsc-dataseed.binance.org/",
+    public: { http: ['https://bsc-dataseed.binance.org/'] },
+    default: { http: ['https://bsc-dataseed.binance.org/'] },
   },
   blockExplorers: {
     default: { name: "BSC-Scanner", url: "https://bscscan.com/" },
@@ -95,7 +97,8 @@ const Binance_testnet: Chain = {
     symbol: "BSC",
   },
   rpcUrls: {
-    default: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+    public: { http: ['https://data-seed-prebsc-1-s1.binance.org:8545/'] },
+    default: { http: ['https://data-seed-prebsc-1-s1.binance.org:8545/'] },
   },
   blockExplorers: {
     default: { name: "BSC-Scanner", url: "https://testnet.bscscan.com" },
@@ -104,30 +107,36 @@ const Binance_testnet: Chain = {
 };
 
 const { chains, provider } = configureChains(
-  [Binance_mainnet,Binance_testnet, BRISE_Mainnet, chain.polygon],
-  [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
+  [Binance_mainnet,Binance_testnet, BRISE_Mainnet],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: `https://${chain.id}.example.com`,
+      }),
+    }),
+  ],
 );
 
-// const {connectors} = getDefaultWallets({
-//   appName: "My App",
-//   chains
-// })
+const {connectors} = getDefaultWallets({
+  appName: "My App",
+  chains
+})
 
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      wallet.rainbow({ chains }),
-      wallet.walletConnect({ chains }),
-      wallet.metaMask({ chains }),
-      wallet.trust({ chains }),
-      wallet.argent({ chains }),
-      wallet.coinbase({ appName: "My App", chains }),
-      wallet.brave({ chains }),
-      wallet.steak({ chains }),
-    ],
-  },
-]);
+// const connectors = connectorsForWallets([
+//   {
+//     groupName: "Recommended",
+//     wallets: [
+//       wallet.rainbow({ chains }),
+//       wallet.walletConnect({ chains }),
+//       wallet.metaMask({ chains }),
+//       wallet.trust({ chains }),
+//       wallet.argent({ chains }),
+//       wallet.coinbase({ appName: "My App", chains }),
+//       wallet.brave({ chains }),
+//       wallet.steak({ chains }),
+//     ],
+//   },
+// ]);
 
 const wagmiClient = createClient({
   autoConnect: true,
@@ -169,12 +178,22 @@ const linkPhoneWithWallet = ({ Component, pageProps }: AppProps) => {
           )}
         </div>
       ) : (
-        <WagmiConfig client={wagmiClient}>
+        // <WagmiConfig client={wagmiClient}>
+        //   <RainbowKitProvider
+        //     chains={chains}
+        //     theme={lightTheme()}
+        //     coolMode
+        //     showRecentTransactions={true}
+        //   >
+          <WagmiConfig client={wagmiClient}>
           <RainbowKitProvider
-            chains={chains}
-            theme={lightTheme()}
             coolMode
-            showRecentTransactions={true}
+            chains={chains}
+            theme={darkTheme({
+              accentColor: "#04807b",
+              accentColorForeground: "white",
+              borderRadius: "medium",
+            })}
           >
             <Header />
             <Toaster position="top-center" reverseOrder={false} />
