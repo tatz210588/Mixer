@@ -46,6 +46,8 @@ const Pay = () => {
   const [availableWalletType, setAvailableWalletType] = useState<WalletInfo[]>([]);
   const [selectedWallet,setSelectedWallet] = useState<string>("")
   const [tokenAddr, setTokenAddr] = useState<string>("");
+  const [tokenMin, setTokenMin] = useState<string>("");
+  const [tokenSym, setTokenSym] = useState<string>("");
   const [selectedOption, setSelectedOption] = useState<string>();
   const [balanceToken, setBalanceToken] = useState(defaults.balanceToken);
   const [formInput, updateFormInput] = useState({
@@ -210,6 +212,14 @@ const Pay = () => {
   async function transfer(e: any) {
     e?.preventDefault();
 
+    if(!formInput.target || !selectedWallet || !selectedOption || !formInput.amount) {
+      toast.error('All fields are mandatory!');
+      return
+    }
+    if (formInput.amount < parseFloat(tokenMin) || formInput.amount <= 0) {
+      toast.error(`Minimum Deposit ${tokenMin} ${tokenSym}`);
+      return;
+    } else {
     await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
     const accounts = await (window as any).ethereum.request({
       method: "eth_requestAccounts",
@@ -262,6 +272,7 @@ const Pay = () => {
         toast.error("Transaction failed.");
         toast.error(`Error is: ${e}`);
       });
+    }
   }
 
   async function checkAllowance(token: any) {
@@ -345,6 +356,7 @@ const Pay = () => {
                     </div>
                     <select
                       className={style.dropDown}
+                      required
                       onChange={async (e) => {
                         const selectedValue = Number(e.target.value);
                         let token: TokenInfo | undefined;
@@ -352,6 +364,12 @@ const Pay = () => {
                           token = availableTokens[Number(selectedValue)];
                           setSelectedOption(token.name);
                           setTokenAddr(token.address);
+                          setTokenSym(token.symbol);
+                          if (token.address === 'null' && token.name === 'BNB') {
+                            setTokenMin('0.3')
+                          } else if (token.address === '0x55d398326f99059ff775485246999027b3197955' || token.address === '0xe9e7cea3dedca5984780bafc599bd69add087d56') {
+                            setTokenMin('100')
+                          }
                         }
                         //await loadBalance(token);
                       }}
@@ -377,6 +395,7 @@ const Pay = () => {
                     </div>
                     <select
                       className={style.dropDown}
+                      required
                       onChange={async (e) => {
                         const selectedValue = Number(e.target.value);
                         let wallet: WalletInfo | undefined;
@@ -419,6 +438,7 @@ const Pay = () => {
                         type="text"
                         className={style.searchInput}
                         placeholder=""
+                        required
                         value={formInput.target}
                         onChange={(e) =>
                           updateFormInput((formInput) => ({
@@ -444,8 +464,11 @@ const Pay = () => {
                       <input
                         type="number"
                         className={style.searchInput}
-                        placeholder="Amount to transfer"
-                        value={formInput.amount}
+                        placeholder="Minimum deposit - 0.3 BNB / 100 USDT / 100 BUSD"
+                        value={formInput.amount ? formInput.amount : ''}
+                        min={tokenMin}
+                        step="0.01"
+                        required
                         onChange={(e) =>
                           updateFormInput((formInput) => ({
                             ...formInput,
