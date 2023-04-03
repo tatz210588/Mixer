@@ -114,7 +114,7 @@ const Footer = () => {
         </div>
 
         <div className="bg-black p-6 text-center text-white">
-          <span>© 2022 Copyright: </span>
+          <span>© 2023 Copyright: </span>
           <a className="text-white	">A product from EvoFinance</a>
         </div>
       </footer>

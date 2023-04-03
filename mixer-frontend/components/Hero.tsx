@@ -24,14 +24,14 @@ const style = {
   details: ``,
   center: ` h-screen relative justify-center flex-wrap items-center `,
   searchBar: `flex flex-1 w-full border-black items-center bg-[#faf9f7] rounded-[1.0rem] mt-2 bg-lime-200`,
-  searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-[#000000] placeholder:text-[#5e5d5b] placeholder:text-sm`,
+  searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-5 text-[#000000] placeholder:text-[#5e5d5b] placeholder:text-sm`,
   copyContainer: `flex flex-1 w-full border-black items-center bg-[#faf9f7] rounded-[0.8rem]`,
   title: `relative text-black justify-center text-2xl lg:text-[46px] font-semibold`,
   description: `text-[#000000] container-[400px] text-lg lg:text-lg mt-[0.8rem] mb-[2.5rem]`,
   spinner: `w-full h-screen flex justify-center text-white mt-20 p-100 object-center`,
   nftButton: `font-bold w-9/12 mt-10 bg-[#43058f] text-white text-lg rounded-[2.2rem] p-3  shadow-lg hover:bg-lime-400	 cursor-pointer bg-lime-500	`,
-  dropDown: `font-bold w-full mt-4  text-white text-sm lg:text-lg rounded-[1.8rem] p-4 shadow-sm cursor-pointer bg-lime-200`,
-  dropDownCrypto: `font-bold w-9/12 mt-4  text-white text-sm lg:text-lg rounded-[1.8rem] p-4 shadow-sm cursor-pointer bg-lime-200`,
+  dropDown: `font-bold w-full mt-4  text-black text-sm lg:text-lg rounded-[1.8rem] p-4 shadow-sm cursor-pointer bg-lime-200`,
+  dropDownCrypto: `font-bold w-9/12 mt-4  text-black text-sm lg:text-lg rounded-[1.8rem] p-4 shadow-sm cursor-pointer bg-lime-200`,
   option: `font-bold w-1/2 lg:w-full mt-4 bg-[#2181e2] text-white text-sm lg:text-lg rounded p-4 shadow-lg cursor-pointer`,
   glowDivBox: `relative group w-full lg:w-[40%] mt-30 rounded-2xl mr-2 `,
 };
@@ -485,7 +485,7 @@ const Pay = () => {
                           }))
                         }
                       >
-                        <InputIcon className="input-icon" Icon={FaBackspace} />
+                        <InputIcon className="input-icon mr-8" Icon={FaBackspace} />
                       </button>
                     </div>
 
