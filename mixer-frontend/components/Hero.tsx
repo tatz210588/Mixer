@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getTokenByChain, TokenInfo } from "../assets/tokenConfig";
+import { getWalletTypeByChain, WalletInfo } from "../assets/walletTypeConfig";
 import { useAccount, useNetwork } from "wagmi";
 import BusyLoader, { LoaderType } from "../components/BusyLoader";
 import { FaBackspace, FaMoneyBillWave } from "react-icons/fa";
@@ -42,6 +43,8 @@ const defaults = {
 const Pay = () => {
   //const { chain, chains } = useNetwork();
   const [availableTokens, setAvailableTokens] = useState<TokenInfo[]>([]);
+  const [availableWalletType, setAvailableWalletType] = useState<WalletInfo[]>([]);
+  const [selectedWallet,setSelectedWallet] = useState<string>("")
   const [tokenAddr, setTokenAddr] = useState<string>("");
   const [selectedOption, setSelectedOption] = useState<string>();
   const [balanceToken, setBalanceToken] = useState(defaults.balanceToken);
@@ -58,6 +61,7 @@ const Pay = () => {
   useEffect(() => {
     onLoad();
     setAvailableTokens(getTokenByChain(currNet));
+    setAvailableWalletType(getWalletTypeByChain(currNet));
   }, [currNet, defaultAccount]);
 
   const onLoad = async () => {
@@ -360,6 +364,37 @@ const Pay = () => {
                             key={token.address}
                           >
                             {token.name}
+                          </option>
+                        )
+                      )}
+                    </select>
+                    <div className={style.info}>
+                      <div className={style.infoLeft}>
+                        <div className="mt-4 mb-2 ml-5 text-sm font-bold text-[#000000]">
+                          Choose Wallet Type:
+                        </div>
+                      </div>
+                    </div>
+                    <select
+                      className={style.dropDown}
+                      onChange={async (e) => {
+                        const selectedValue = Number(e.target.value);
+                        let wallet: WalletInfo | undefined;
+                        if (selectedValue) {
+                          wallet = availableWalletType[Number(selectedValue)];
+                          setSelectedWallet(wallet.type);
+                        }
+                        //await loadBalance(token);
+                      }}
+                    >
+                      {availableWalletType?.map(
+                        (wallet: WalletInfo, index: number) => (
+                          <option
+                            className={style.option}
+                            value={index}
+                            key={wallet.type}
+                          >
+                            {wallet.type}
                           </option>
                         )
                       )}

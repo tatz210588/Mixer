@@ -72,7 +72,13 @@ const tokenConfig: Record<number, TokenInfo[]> = {
       name: "USD Tether",
       address: "0x55d398326f99059ff775485246999027b3197955",
       symbol: "USDT",
-      decimal: 6,
+      decimal: 18,
+    },
+    {
+      name: "BUSD",
+      address: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+      symbol: "BUSD",
+      decimal: 18,
     },
   ],
   "97": [
@@ -89,10 +95,16 @@ const tokenConfig: Record<number, TokenInfo[]> = {
       decimal: 18,
     },
     {
-      name: "USD Tether",
+      name: "USDT",
       address: "0x55d398326f99059ff775485246999027b3197955",
       symbol: "USDT",
-      decimal: 6,
+      decimal: 18,
+    },
+    {
+      name: "BUSD",
+      address: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+      symbol: "BUSD",
+      decimal: 18,
     },
   ],
 };
