@@ -122,7 +122,7 @@ const Header = () => {
       <div className="block lg:hidden">
         <button
           onClick={handleBtnClick}
-          className="flex items-center rounded border border-[#000000] px-3 py-2 text-[#000000] hover:border-white hover:text-white"
+          className="flex items-center rounded border border-[#000000] px-3 py-2 text-[#000000] hover:border-black hover:text-black"
         >
           <svg
             className="h-3 w-3 fill-current"

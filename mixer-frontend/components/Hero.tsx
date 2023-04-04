@@ -20,7 +20,7 @@ const style = {
   info: `flex justify-between text-[#e4e8eb] drop-shadow-xl`,
   infoLeft: `flex-0.2 flex-wrap`,
   container: `flex flex-wrap before:content-['']  before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0  before:bg-cover before:bg-center before:bg-fixed before:opacity-100 bg-lime-50	`,
-  contentWrapper: `w-full m-4 h-screen relative justify-center flex-wrap items-center block flex-grow lg:flex lg:items-center lg:w-auto bg-lime-50	`,
+  contentWrapper: `w-full m-4 h-screen overflow-auto justify-center flex-wrap items-center block flex-grow lg:flex lg:items-center lg:w-auto bg-lime-50	`,
   details: ``,
   center: ` h-screen relative justify-center flex-wrap items-center `,
   searchBar: `flex flex-1 w-full border-black items-center bg-[#faf9f7] rounded-[1.0rem] mt-2 bg-lime-200`,
@@ -33,7 +33,7 @@ const style = {
   dropDown: `font-bold w-full mt-4  text-black text-sm lg:text-lg rounded-[1.8rem] p-4 shadow-sm cursor-pointer bg-lime-200`,
   dropDownCrypto: `font-bold w-9/12 mt-4  text-black text-sm lg:text-lg rounded-[1.8rem] p-4 shadow-sm cursor-pointer bg-lime-200`,
   option: `font-bold w-1/2 lg:w-full mt-4 bg-[#2181e2] text-white text-sm lg:text-lg rounded p-4 shadow-lg cursor-pointer`,
-  glowDivBox: `relative group w-full lg:w-[40%] mt-30 rounded-2xl mr-2 `,
+  glowDivBox: `relative group w-full lg:w-[40%] mt-30 rounded-2xl mr-2  w-screen  justify-center  `,
 };
 
 const defaults = {
@@ -517,7 +517,7 @@ const Pay = () => {
             </div>
 
             <div className={style.glowDivBox}>
-              <div className="relative ml-5 h-[full] w-[95%] justify-center rounded-lg	 bg-lime-100 px-7  py-9 text-center leading-none lg:w-full">
+              <div className="relative m-0 md:ml-5 h-[full] w-[95%] justify-center rounded-lg mt-3 bg-lime-100 px-7 py-9 text-center leading-none lg:w-full">
                 <>
                   <div className={style.details}>
                     <span className="flex flex-wrap justify-center space-x-5">

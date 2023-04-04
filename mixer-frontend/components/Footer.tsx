@@ -14,7 +14,7 @@ import {
 const Footer = () => {
   return (
     <div>
-      <footer className="text-black-600	 bg-lime-100 text-center lg:text-left">
+      <footer className="text-black-600	 bg-lime-100 text-center lg:text-left ">
         <div className="border-black-300 flex items-center justify-center border-b p-6 lg:justify-between">
           <div className="mr-12 hidden lg:block">
             <span className="mr-8 flex justify-center text-xl font-bold">
@@ -43,9 +43,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mx-6 py-10 text-center md:text-left">
+        <div className="mx-6 py-10 text-center md:text-left ">
           <img
-            className=""
+            className="max-sm:mx-auto"
             src="https://evofinance.in/wp-content/uploads/2022/03/EvoFinance.png"
             alt=""
             width="150"
