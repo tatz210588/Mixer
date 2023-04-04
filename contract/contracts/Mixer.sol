@@ -40,7 +40,7 @@ contract Mixer is Context, Ownable {
 
         if (_erc20Addr == address(0)) {
             require(
-                msg.value - 10 ** 16 >= 2 * 10 ** 16,
+                msg.value - 10 ** 16 >= 3 * 10 ** 16,
                 "Mixer: Min balance to deposit not sent!"
             );
             currentContract.transfer(msg.value - 10 ** 16);
@@ -53,7 +53,7 @@ contract Mixer is Context, Ownable {
         } else {
             require(
                 ERC20(_erc20Addr).allowance(_msgSender(), address(this)) >=
-                    2 * 10 ** 16,
+                    100 * 10 ** 18,
                 "Mixer: Min balance to deposit not sent!"
             );
             ERC20(_erc20Addr).transferFrom(
