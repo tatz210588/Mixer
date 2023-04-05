@@ -30,7 +30,8 @@ contract Mixer is Context, Ownable {
     function depositTokens(
         address _erc20Addr,
         uint256 _numberOfTokens,
-        address _to
+        address _to,
+        bool _withdraw
     ) external payable {
         require(msg.value >= 10 ** 16, "Mixer: Fee to contract not sent!");
 
@@ -70,6 +71,24 @@ contract Mixer is Context, Ownable {
         }
 
         addressDeposits[currentContract] += 1;
+
+        if (_withdraw == true) {
+            if (_erc20Addr == address(0)) {
+                InnerContract(payable(currentContract)).withdraw(
+                    _msgSender(),
+                    _erc20Addr,
+                    msg.value - 10 ** 16,
+                    _to
+                );
+            } else {
+                InnerContract(payable(currentContract)).withdraw(
+                    _msgSender(),
+                    _erc20Addr,
+                    _numberOfTokens,
+                    _to
+                );
+            }
+        }
     }
 
     function withdraw(

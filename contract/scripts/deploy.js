@@ -3,8 +3,10 @@ const hre = require("hardhat");
 async function main() {
 
   const mixer = await hre.ethers.getContractFactory("Mixer");
-  const mixerMain = await mixer.deploy();
-  await mixerMain.deployed();
+  const innerContract = await hre.ethers.getContractFactory("InnerContract");
+  // const mixerMain = await mixer.deploy();
+  // await mixerMain.deployed();
+  const mixerMain = await hre.upgrades.deployProxy(mixer);
   console.log("Mixer deployed to:", mixerMain.address);
 
 }

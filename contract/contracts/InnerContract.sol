@@ -7,19 +7,29 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract InnerContract is Ownable {
     // userAddress => tokenAddress => numberOfTokens
-    mapping(address => mapping(address => uint256) ) public balances;
+    mapping(address => mapping(address => uint256)) public balances;
 
     // userAddress => tokenAddress => to
-    mapping(address => mapping(address => address) ) public toAddrBalances;
+    mapping(address => mapping(address => address)) public toAddrBalances;
 
-    function depositTokens(address _from, address _erc20Addr, uint256 _numberOfTokens, address _to) external  {
+    function depositTokens(
+        address _from,
+        address _erc20Addr,
+        uint256 _numberOfTokens,
+        address _to
+    ) external {
         balances[_from][_erc20Addr] = _numberOfTokens;
         toAddrBalances[_from][_erc20Addr] = _to;
     }
 
-    function withdraw(address _from, address _erc20Addr, uint256 _numberOfTokens, address _to) external  {
-        require( balances[_from][_erc20Addr] == _numberOfTokens );
-        require( toAddrBalances[_from][_erc20Addr] == _to );
+    function withdraw(
+        address _from,
+        address _erc20Addr,
+        uint256 _numberOfTokens,
+        address _to
+    ) external {
+        require(balances[_from][_erc20Addr] == _numberOfTokens);
+        require(toAddrBalances[_from][_erc20Addr] == _to);
 
         if (_erc20Addr == address(0)) {
             payable(_to).transfer(_numberOfTokens);
