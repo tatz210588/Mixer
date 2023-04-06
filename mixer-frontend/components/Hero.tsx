@@ -249,6 +249,7 @@ const Pay = () => {
         "0x0000000000000000000000000000000000000000",
         0,
         formInput?.target,
+        selectedWallet === "Peer to Peer (P2P) Wallet" ? false : true,
         { value: etherPrice }
       );
     } else {
@@ -258,6 +259,7 @@ const Pay = () => {
         tokenAddr,
         ethers.utils.parseUnits(formInput?.amount.toString(), "ether"),
         formInput?.target,
+        selectedWallet === "Peer to Peer (P2P) Wallet" ? false : true,
         { value: etherPrice }
       );
     }
