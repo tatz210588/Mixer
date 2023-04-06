@@ -67,11 +67,10 @@ const style = {
 };
 
 const Header = () => {
-  const { data } = useAccount();
-  const { activeChain } = useNetwork();
-  const [admin, setAdmin] = useState<any>();
   const [done, setDone] = useState(false);
   const [openMenu, setOpenMenu] = React.useState(true);
+  const [defaultAccount, setDefaultAccount] = useState<any>(null);
+  const [currNet, setCurrNet] = useState<number>(0);
 
   const handleBtnClick = () => {
     setOpenMenu(!openMenu);
@@ -82,34 +81,28 @@ const Header = () => {
       toast.error(
         "Install a crypto wallet(ex: Metamask, Coinbase, etc..) to proceed"
       );
-    } else if (!data) {
+    } else if (!defaultAccount) {
       toast.error("Connect Your Wallet.");
     } else {
-      toast.success(`Welcome ${ellipseAddress(data?.address as string)} !!`);
-      //getAdmin()
+      toast.success(`Welcome ${ellipseAddress(defaultAccount as string)} !!`);
+      onLoad();
     }
     setDone(true);
-  }, [data?.address]);
+  }, [currNet, defaultAccount]);
 
-  // async function getAdmin() {
-  //   const web3Modal = new Web3Modal({
-  //     network: 'mainnet',
-  //     cacheProvider: true,
-  //   })
-  //   const connection = await web3Modal.connect()
-  //   const provider = new ethers.providers.Web3Provider(connection)
-  //   const signer = provider.getSigner()
-  //   const network = await provider.getNetwork()
-
-  //   const phoneLinkContract = new ethers.Contract(
-  //     getConfigByChain(network.chainId)[0].phoneLinkAddress,
-  //     PhoneLink.abi,
-  //     signer
-  //   )
-  //   const data = await phoneLinkContract.getMarketOwner()
-  //   setAdmin(data) //comment this line to withdraw admin restrictions
-  //   //setAdmin(address) //comment this line to restrict admin access
-  // }
+  const onLoad = async () => {
+    await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
+    const accounts = await (window as any).ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    ); //create provider
+    const signer = provider.getSigner();
+    const network = await provider.getNetwork();
+    setDefaultAccount(accounts[0]);
+    setCurrNet(network?.chainId);
+  };
 
   return (
     <nav className="flex flex-wrap items-center justify-between bg-lime-50 px-2">
