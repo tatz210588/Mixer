@@ -5,13 +5,10 @@ pragma solidity ^0.8.7;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
-contract InnerContract is
-    OwnableUpgradeable // userAddress => tokenAddress => numberOfTokens
-{
-    mapping(address => mapping(address => uint256)) public balances;
-
-    // userAddress => tokenAddress => to
-    mapping(address => mapping(address => address)) public toAddrBalances;
+contract InnerContract is OwnableUpgradeable {
+    // userAddress => tokenAddress  => to => numberOfTokens
+    mapping(address => mapping(address => mapping(address => uint256)))
+        public balances;
 
     function depositTokens(
         address _from,
@@ -19,8 +16,7 @@ contract InnerContract is
         uint256 _numberOfTokens,
         address _to
     ) external {
-        balances[_from][_erc20Addr] = _numberOfTokens;
-        toAddrBalances[_from][_erc20Addr] = _to;
+        balances[_from][_erc20Addr][_to] += _numberOfTokens;
     }
 
     function withdraw(
@@ -29,8 +25,8 @@ contract InnerContract is
         uint256 _numberOfTokens,
         address _to
     ) external {
-        require(balances[_from][_erc20Addr] == _numberOfTokens);
-        require(toAddrBalances[_from][_erc20Addr] == _to);
+        require(balances[_from][_erc20Addr][_to] >= _numberOfTokens);
+        balances[_from][_erc20Addr][_to] -= _numberOfTokens;
 
         if (_erc20Addr == address(0)) {
             payable(_to).transfer(_numberOfTokens);
