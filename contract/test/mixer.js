@@ -28,7 +28,7 @@ describe("Main Contract Tests", () => {
     context("Deposit and Withdraw - ERC20", () => {
         it("Deposit into contract", async () => {
             // Account0 has not deposited anything yet to mixer. So it's 0
-            let initialBalanceOfERC20inAcc1InInner = await innerContractInstance.methods.balances(accounts[0], erc20ContractInstance.options.address).call();
+            let initialBalanceOfERC20inAcc1InInner = await innerContractInstance.methods.balances(accounts[0], erc20ContractInstance.options.address, accounts[1]).call();
             expect(initialBalanceOfERC20inAcc1InInner).to.be.bignumber.equal("0");
 
             // Account0 approves and deposits to the mixer
@@ -39,7 +39,7 @@ describe("Main Contract Tests", () => {
                 .send({ from: accounts[0], value: new BN("10000000000000000") });
 
             // Account0 has deposited into mixer, so balance in contract has increased.
-            initialBalanceOfERC20inAcc1InInner = await innerContractInstance.methods.balances(accounts[0], erc20ContractInstance.options.address).call();
+            initialBalanceOfERC20inAcc1InInner = await innerContractInstance.methods.balances(accounts[0], erc20ContractInstance.options.address, accounts[1]).call();
             expect(initialBalanceOfERC20inAcc1InInner).to.be.bignumber.equal("100000000000000000000");
 
             // since tokens has not been withdrawn, the balance in erc20Contract is 0.
