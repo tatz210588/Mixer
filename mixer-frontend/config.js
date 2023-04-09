@@ -27,7 +27,7 @@ export const networkConfig = {
     ],
     "97": [
         {
-            mixerAddress: "0x911667AA8fd5D17f08F79856Da0D51c38fa006A9",
+            mixerAddress: "0x03B4b9d8B987D062817Ff23867F3c3e832eAF9C5",
             token_icon: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=022",
             alt: "BSC",
             networkName: "binance-testnet"
