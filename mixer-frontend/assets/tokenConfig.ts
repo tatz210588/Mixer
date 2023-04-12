@@ -94,9 +94,16 @@ const tokenConfig: Record<number, TokenInfo[]> = {
       symbol: "BNB",
       decimal: 18,
     },
+
     {
       name: "USDT",
-      address: "0x55d398326f99059ff775485246999027b3197955",
+      address: "0xACd8B7599d8416619eAB223c9D4B60F5C55a7E4c",
+      symbol: "USDT",
+      decimal: 18,
+    },
+    {
+      name: "GLD (Tatz test Token)",
+      address: "0xACd8B7599d8416619eAB223c9D4B60F5C55a7E4c",
       symbol: "USDT",
       decimal: 18,
     },

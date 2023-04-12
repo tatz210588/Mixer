@@ -43,11 +43,14 @@ const defaults = {
 const Pay = () => {
   //const { chain, chains } = useNetwork();
   const [availableTokens, setAvailableTokens] = useState<TokenInfo[]>([]);
-  const [availableWalletType, setAvailableWalletType] = useState<WalletInfo[]>([]);
-  const [selectedWallet,setSelectedWallet] = useState<string>("")
+  const [availableWalletType, setAvailableWalletType] = useState<WalletInfo[]>(
+    []
+  );
+  const [selectedWallet, setSelectedWallet] = useState<string>("");
   const [tokenAddr, setTokenAddr] = useState<string>("");
   const [tokenMin, setTokenMin] = useState<string>("");
   const [tokenSym, setTokenSym] = useState<string>("");
+  const[withdrawPanel,setWithdrawPanel]=useState<Boolean>(true);
   const [selectedOption, setSelectedOption] = useState<string>();
   const [balanceToken, setBalanceToken] = useState(defaults.balanceToken);
   const [formInput, updateFormInput] = useState({
@@ -212,68 +215,73 @@ const Pay = () => {
   async function transfer(e: any) {
     e?.preventDefault();
 
-    if(!formInput.target || !selectedWallet || !selectedOption || !formInput.amount) {
-      toast.error('All fields are mandatory!');
-      return
+    if (
+      !formInput.target ||
+      !selectedWallet ||
+      !selectedOption ||
+      !formInput.amount
+    ) {
+      toast.error("All fields are mandatory!");
+      return;
     }
     if (formInput.amount < parseFloat(tokenMin) || formInput.amount <= 0) {
       toast.error(`Minimum Deposit ${tokenMin} ${tokenSym}`);
       return;
     } else {
-    await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
-    const accounts = await (window as any).ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    const myAddress = accounts[0];
-
-    const provider = new ethers.providers.Web3Provider(
-      (window as any).ethereum
-    ); //create provider
-    const signer = provider.getSigner();
-    const network = await provider.getNetwork();
-    const contract = new ethers.Contract(
-      getConfigByChain(network?.chainId)[0].mixerAddress,
-      Mixer.abi,
-      signer
-    );
-    var tx;
-    const innerContract = await contract.getCurrentContract();
-    console.log("my addr", contract);
-    //await saveTransaction(innerContract as any);
-
-    if (tokenAddr === "null") {
-      const val: number = Number(formInput?.amount) + fee;
-      console.log("val", val);
-      const etherPrice = ethers.utils.parseUnits(val.toString(), "ether");
-      tx = await contract.depositTokens(
-        "0x0000000000000000000000000000000000000000",
-        0,
-        formInput?.target,
-        selectedWallet === "Peer to Peer (P2P) Wallet" ? false : true,
-        { value: etherPrice }
-      );
-    } else {
-      const etherPrice = ethers.utils.parseUnits(fee.toString(), "ether");
-
-      tx = await contract.depositTokens(
-        tokenAddr,
-        ethers.utils.parseUnits(formInput?.amount.toString(), "ether"),
-        formInput?.target,
-        selectedWallet === "Peer to Peer (P2P) Wallet" ? false : true,
-        { value: etherPrice }
-      );
-    }
-
-    const receipt = await provider
-      .waitForTransaction(tx.hash, 1, 150000)
-      .then(async () => {
-        toast.success("Transfer completed !!");
-        await saveTransaction(innerContract as any);
-      })
-      .catch((e) => {
-        toast.error("Transaction failed.");
-        toast.error(`Error is: ${e}`);
+      await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
+      const accounts = await (window as any).ethereum.request({
+        method: "eth_requestAccounts",
       });
+      const myAddress = accounts[0];
+
+      const provider = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      ); //create provider
+      const signer = provider.getSigner();
+      const network = await provider.getNetwork();
+      const contract = new ethers.Contract(
+        getConfigByChain(network?.chainId)[0].mixerAddress,
+        Mixer.abi,
+        signer
+      );
+      var tx;
+      const innerContract = await contract.getCurrentContract();
+      console.log("my addr", contract);
+      //await saveTransaction(innerContract as any);
+
+      if (tokenAddr === "null") {
+        const val: number = Number(formInput?.amount) + fee;
+        console.log("val", val);
+        const etherPrice = ethers.utils.parseUnits(val.toString(), "ether");
+        tx = await contract.depositTokens(
+          "0x0000000000000000000000000000000000000000",
+          0,
+          formInput?.target,
+          selectedWallet === "Peer to Peer (P2P) Wallet" ? false : true,
+          { value: etherPrice }
+        );
+      } else {
+        const etherPrice = ethers.utils.parseUnits(fee.toString(), "ether");
+
+        tx = await contract.depositTokens(
+          tokenAddr,
+          ethers.utils.parseUnits(formInput?.amount.toString(), "ether"),
+          formInput?.target,
+          selectedWallet === "Peer to Peer (P2P) Wallet" ? false : true,
+          { value: etherPrice }
+        );
+      }
+
+      const receipt = await provider
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(async () => {
+          toast.success("Transfer completed !!");
+          await saveTransaction(innerContract as any);
+        })
+        .catch((e) => {
+          toast.error("Transaction failed.");
+          toast.error(`Error is: ${e}`);
+        });
     }
   }
 
@@ -367,10 +375,19 @@ const Pay = () => {
                           setSelectedOption(token.name);
                           setTokenAddr(token.address);
                           setTokenSym(token.symbol);
-                          if (token.address === 'null' && token.name === 'BNB') {
-                            setTokenMin('0.3')
-                          } else if (token.address === '0x55d398326f99059ff775485246999027b3197955' || token.address === '0xe9e7cea3dedca5984780bafc599bd69add087d56') {
-                            setTokenMin('100')
+                          checkAllowance(token.address);
+                          if (
+                            token.address === "null" &&
+                            token.name === "BNB"
+                          ) {
+                            setTokenMin("0.3");
+                          } else if (
+                            token.address ===
+                              "0x55d398326f99059ff775485246999027b3197955" ||
+                            token.address ===
+                              "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+                          ) {
+                            setTokenMin("100");
                           }
                         }
                         //await loadBalance(token);
@@ -404,6 +421,9 @@ const Pay = () => {
                         if (selectedValue) {
                           wallet = availableWalletType[Number(selectedValue)];
                           setSelectedWallet(wallet.type);
+                          wallet.type === "Peer to Peer (P2P) Wallet"
+                            ? setWithdrawPanel(true)
+                            : setWithdrawPanel(false);
                         }
                         //await loadBalance(token);
                       }}
@@ -467,7 +487,7 @@ const Pay = () => {
                         type="number"
                         className={style.searchInput}
                         placeholder="Minimum deposit - 0.3 BNB / 100 USDT / 100 BUSD"
-                        value={formInput.amount ? formInput.amount : ''}
+                        value={formInput.amount ? formInput.amount : ""}
                         min={tokenMin}
                         step="0.01"
                         required
@@ -487,7 +507,10 @@ const Pay = () => {
                           }))
                         }
                       >
-                        <InputIcon className="input-icon mr-8" Icon={FaBackspace} />
+                        <InputIcon
+                          className="input-icon mr-8"
+                          Icon={FaBackspace}
+                        />
                       </button>
                     </div>
 
@@ -504,7 +527,7 @@ const Pay = () => {
                           Connecting to blockchain. Please wait
                         </div>
                       </BusyLoader>
-                    ) : (
+                    ) : allowed === true ? (
                       <button
                         type="submit"
                         onClick={transfer}
@@ -512,97 +535,106 @@ const Pay = () => {
                       >
                         Deposit
                       </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        onClick={approve}
+                        className={style.nftButton}
+                      >
+                        Approve
+                      </button>
                     )}
                   </div>
                 </>
               </div>
             </div>
-
-            <div className={style.glowDivBox}>
-              <div className="relative m-0 md:ml-5 h-[full] w-[95%] justify-center rounded-lg mt-3 bg-lime-100 px-7 py-9 text-center leading-none lg:w-full">
-                <>
-                  <div className={style.details}>
-                    <span className="flex flex-wrap justify-center space-x-5">
-                      <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
-                        Withdraw Crypto
+            {withdrawPanel && (
+              <div className={style.glowDivBox}>
+                <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full">
+                  <>
+                    <div className={style.details}>
+                      <span className="flex flex-wrap justify-center space-x-5">
+                        <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
+                          Withdraw Crypto
+                        </span>
                       </span>
-                    </span>
-                    <span className="flex flex-wrap items-center justify-center space-x-5">
-                      <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
-                        Withdraw your funds to your wallet
+                      <span className="flex flex-wrap items-center justify-center space-x-5">
+                        <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
+                          Withdraw your funds to your wallet
+                        </span>
                       </span>
-                    </span>
-                  </div>
+                    </div>
 
-                  <div className="font-bold drop-shadow-xl">
-                    <div className={style.info}>
-                      <div className={style.infoLeft}>
-                        <div className="mt-4 mb-2 ml-20 text-sm font-bold text-[#000000]">
-                          Choose Cryptocurrency:
+                    <div className="font-bold drop-shadow-xl">
+                      <div className={style.info}>
+                        <div className={style.infoLeft}>
+                          <div className="mt-4 mb-2 ml-20 text-sm font-bold text-[#000000]">
+                            Choose Cryptocurrency:
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <select
-                      className={style.dropDownCrypto}
-                      onChange={async (e) => {
-                        const selectedValue = Number(e.target.value);
-                        let token: TokenInfo | undefined;
-                        if (selectedValue) {
-                          token = availableTokens[Number(selectedValue)];
-                          setSelectedOption(token.name);
-                          setTokenAddr(token.address);
-                        }
-                        //await loadBalance(token);
-                      }}
-                    >
-                      {availableTokens?.map(
-                        (token: TokenInfo, index: number) => (
-                          <option
-                            className={style.option}
-                            value={index}
-                            key={token.address}
-                          >
-                            {token.name}
-                          </option>
-                        )
-                      )}
-                    </select>
-
-                    {loadingState === true ? (
-                      <BusyLoader
-                        loaderType={LoaderType.Beat}
-                        wrapperClass="white-busy-container"
-                        className="white-busy-container"
-                        color={"#000000"}
-                        size={15}
+                      <select
+                        className={style.dropDownCrypto}
+                        onChange={async (e) => {
+                          const selectedValue = Number(e.target.value);
+                          let token: TokenInfo | undefined;
+                          if (selectedValue) {
+                            token = availableTokens[Number(selectedValue)];
+                            setSelectedOption(token.name);
+                            setTokenAddr(token.address);
+                          }
+                          //await loadBalance(token);
+                        }}
                       >
-                        <div className={style.description}>
-                          {" "}
-                          Connecting to blockchain. Please wait
-                        </div>
-                      </BusyLoader>
-                    ) : (
-                      <>
-                        <button
-                          type="submit"
-                          onClick={getMyBalance}
-                          className={style.nftButton}
+                        {availableTokens?.map(
+                          (token: TokenInfo, index: number) => (
+                            <option
+                              className={style.option}
+                              value={index}
+                              key={token.address}
+                            >
+                              {token.name}
+                            </option>
+                          )
+                        )}
+                      </select>
+
+                      {loadingState === true ? (
+                        <BusyLoader
+                          loaderType={LoaderType.Beat}
+                          wrapperClass="white-busy-container"
+                          className="white-busy-container"
+                          color={"#000000"}
+                          size={15}
                         >
-                          Check Balance
-                        </button>
-                        <button
-                          type="submit"
-                          onClick={withdraw}
-                          className={style.nftButton}
-                        >
-                          Withdraw
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </>
+                          <div className={style.description}>
+                            {" "}
+                            Connecting to blockchain. Please wait
+                          </div>
+                        </BusyLoader>
+                      ) : (
+                        <>
+                          <button
+                            type="submit"
+                            onClick={getMyBalance}
+                            className={style.nftButton}
+                          >
+                            Check Balance
+                          </button>
+                          <button
+                            type="submit"
+                            onClick={withdraw}
+                            className={style.nftButton}
+                          >
+                            Withdraw
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
