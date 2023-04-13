@@ -50,7 +50,7 @@ const Pay = () => {
   const [tokenAddr, setTokenAddr] = useState<string>("");
   const [tokenMin, setTokenMin] = useState<string>("");
   const [tokenSym, setTokenSym] = useState<string>("");
-  const[withdrawPanel,setWithdrawPanel]=useState<Boolean>(true);
+  const [withdrawPanel, setWithdrawPanel] = useState<Boolean>(true);
   const [selectedOption, setSelectedOption] = useState<string>();
   const [balanceToken, setBalanceToken] = useState(defaults.balanceToken);
   const [formInput, updateFormInput] = useState({
@@ -286,20 +286,24 @@ const Pay = () => {
   }
 
   async function checkAllowance(token: any) {
-    await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
-    const provider = new ethers.providers.Web3Provider(
-      (window as any).ethereum
-    ); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-    const tokenContract = new ethers.Contract(token, Token.abi, signer);
-    //use await function for handling promise
-    if (defaultAccount) {
-      const tx = await tokenContract.allowance(
-        defaultAccount,
-        getConfigByChain(network.chainId)[0].mixerAddress
-      );
-      formatBigNumber(tx) != "0" ? setAllowed(true) : setAllowed(false);
+    if (token != "null") {
+      await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
+      const provider = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      ); //create provider
+      const network = await provider.getNetwork();
+      const signer = provider.getSigner();
+      const tokenContract = new ethers.Contract(token, Token.abi, signer);
+      //use await function for handling promise
+      if (defaultAccount) {
+        const tx = await tokenContract.allowance(
+          defaultAccount,
+          getConfigByChain(network.chainId)[0].mixerAddress
+        );
+        formatBigNumber(tx) != "0" ? setAllowed(true) : setAllowed(false);
+      }
+    } else {
+      setAllowed(true);
     }
   }
   async function approve() {
