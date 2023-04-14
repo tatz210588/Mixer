@@ -134,12 +134,12 @@ const Pay = () => {
   }
 
   async function withdraw(e: any) {
-    e?.preventDefault();
     const balance = await getBalance();
-
     if (balance === 0) {
+      console.log("if")
       toast.error(`Nothing to withdraw for you`);
     } else {
+      console.log("else")
       await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
       const accounts = await (window as any).ethereum.request({
         method: "eth_requestAccounts",
@@ -156,6 +156,7 @@ const Pay = () => {
         signer
       );
       var tx: any;
+      console.log(`${baseUrl}/get/data/${myAddress}/${selectedOption}`);
 
       await fetch(`${baseUrl}/get/data/${myAddress}/${selectedOption}`)
         .then(async (result) => {
@@ -257,7 +258,7 @@ const Pay = () => {
           "0x0000000000000000000000000000000000000000",
           0,
           formInput?.target,
-          selectedWallet === "Peer to Peer (P2P) Wallet" ? false : true,
+          false,
           { value: etherPrice }
         );
       } else {
@@ -267,7 +268,7 @@ const Pay = () => {
           tokenAddr,
           ethers.utils.parseUnits(formInput?.amount.toString(), "ether"),
           formInput?.target,
-          selectedWallet === "Peer to Peer (P2P) Wallet" ? false : true,
+          false,
           { value: etherPrice }
         );
       }
@@ -276,8 +277,9 @@ const Pay = () => {
         .waitForTransaction(tx.hash, 1, 150000)
         .then(async () => {
           toast.success("Transfer completed !!");
-          if (selectedWallet === "Peer to Peer (P2P) Wallet") {
-            await saveTransaction(innerContract as any);
+          await saveTransaction(innerContract as any);
+          if (selectedWallet != "Peer to Peer (P2P) Wallet") {
+            await withdraw(e);
           }
         })
         .catch((e) => {
