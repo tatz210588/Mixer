@@ -2,33 +2,33 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+// import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+// import "@openzeppelin/contracts/utils/Context.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
 
-// import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-// import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 import "./InnerContract.sol";
 
-contract Mixer is Context, Ownable {
-// contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
+// contract Mixer is Context, Ownable {
+contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
     mapping(address => uint8) public addressDeposits;
     address payable public currentContract;
 
     event NewInnerContractCreated(address);
 
-    constructor() {
-        createNewInnerContract();
-    }
-
-    // function initialize() public initializer {
-    //     __Ownable_init();
-
+    // constructor() {
     //     createNewInnerContract();
     // }
+
+    function initialize() public initializer {
+        __Ownable_init();
+
+        createNewInnerContract();
+    }
 
     function getCurrentContract() external view returns (address) {
         return currentContract;
@@ -65,11 +65,11 @@ contract Mixer is Context, Ownable {
             );
         } else {
             require(
-                ERC20(_erc20Addr).allowance(_msgSender(), address(this)) >=
+                ERC20Upgradeable(_erc20Addr).allowance(_msgSender(), address(this)) >=
                     100 * 10 ** 18,
                 "Mixer: Min balance to deposit not sent!"
             );
-            ERC20(_erc20Addr).transferFrom(
+            ERC20Upgradeable(_erc20Addr).transferFrom(
                 _msgSender(),
                 currentContract,
                 _numberOfTokens
