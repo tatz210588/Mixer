@@ -35,7 +35,7 @@ describe("Main Contract Tests", () => {
             await erc20ContractInstance.methods.approve(mixerContractInstance.options.address, "100000000000000000000")
                 .send({ from: accounts[0] });
 
-            await mixerContractInstance.methods.depositTokens(erc20ContractInstance.options.address, "100000000000000000000", accounts[1], false)
+            await mixerContractInstance.methods.depositTokens(erc20ContractInstance.options.address, "100000000000000000000", accounts[1])
                 .send({ from: accounts[0], value: new BN("10000000000000000") });
 
             // Account0 has deposited into mixer, so balance in contract has increased.
@@ -61,7 +61,7 @@ describe("Main Contract Tests", () => {
             expect(balanceOfInnerContractOfERC20).to.be.bignumber.equal("100000000000000000000");
 
             // tokens are being withdrawn
-            await mixerContractInstance.methods.withdraw(innerContractAddress, erc20ContractInstance.options.address, "100000000000000000000", accounts[0])
+            await mixerContractInstance.methods.withdraw(innerContractAddress, erc20ContractInstance.options.address, "100000000000000000000", accounts[0], accounts[1])
                 .send({ from: accounts[1] });
 
             // since tokens have been withdrawn, tokens have been transfered.
@@ -80,7 +80,7 @@ describe("Main Contract Tests", () => {
                 .send({ from: accounts[0] });
 
             for (let i = 0; i < 29; i++) {
-                await mixerContractInstance.methods.depositTokens(erc20ContractInstance.options.address, "100000000000000000000", accounts[1], false)
+                await mixerContractInstance.methods.depositTokens(erc20ContractInstance.options.address, "100000000000000000000", accounts[1])
                     .send({ from: accounts[0], value: new BN("10000000000000000") });
             }
 
@@ -95,7 +95,7 @@ describe("Main Contract Tests", () => {
             await erc20ContractInstance.methods.approve(mixerContractInstance.options.address, "100000000000000000000")
                 .send({ from: accounts[0] });
 
-            await mixerContractInstance.methods.depositTokens(erc20ContractInstance.options.address, "100000000000000000000", accounts[1], false)
+            await mixerContractInstance.methods.depositTokens(erc20ContractInstance.options.address, "100000000000000000000", accounts[1])
                 .send({ from: accounts[0], value: new BN("10000000000000000") });
 
             // new inner contract should be created.
@@ -126,7 +126,7 @@ describe("Main Contract Tests", () => {
 
             expect(initialInnerContractBalance).to.be.bignumber.equal("0");
 
-            await mixerContractInstance.methods.depositTokens(constants.ZERO_ADDRESS, "2000000000000000000", accounts[1], false)
+            await mixerContractInstance.methods.depositTokens(constants.ZERO_ADDRESS, "2000000000000000000", accounts[1])
                 .send({ from: accounts[0], value: new BN("10000000000000000").add(new BN("2000000000000000000")) });
 
             let newAccBalance = await network.provider.send("eth_getBalance", [accounts[0]]);
@@ -146,7 +146,7 @@ describe("Main Contract Tests", () => {
             expect(initialInnerContractBalance).to.be.bignumber.equal(new BN("2000000000000000000"));
 
             // tokens are being withdrawn
-            await mixerContractInstance.methods.withdraw(innerContractAddress, constants.ZERO_ADDRESS, "2000000000000000000", accounts[0])
+            await mixerContractInstance.methods.withdraw(innerContractAddress, constants.ZERO_ADDRESS, "2000000000000000000", accounts[0], accounts[1])
                 .send({ from: accounts[1] });
 
             let newAcc1Balance = await network.provider.send("eth_getBalance", [accounts[1]]);
@@ -165,7 +165,7 @@ describe("Main Contract Tests", () => {
             let initialNativeTokenBalanceOfInnerContract = await network.provider.send("eth_getBalance", [innerContractInstance.options.address]);
 
             for (let i = 0; i < 28; i++) {
-                await mixerContractInstance.methods.depositTokens(constants.ZERO_ADDRESS, "2000000000000000000", accounts[1], false)
+                await mixerContractInstance.methods.depositTokens(constants.ZERO_ADDRESS, "2000000000000000000", accounts[1])
                     .send({ from: accounts[0], value: new BN("10000000000000000").add(new BN("2000000000000000000")) });
             }
 
@@ -186,7 +186,7 @@ describe("Main Contract Tests", () => {
         it("If deposit now, should create new InnerContract", async () => {
             let initialInnerContractAddress = await mixerContractInstance.methods.currentContract().call();
 
-            await mixerContractInstance.methods.depositTokens(constants.ZERO_ADDRESS, "2000000000000000000", accounts[1], false)
+            await mixerContractInstance.methods.depositTokens(constants.ZERO_ADDRESS, "2000000000000000000", accounts[1])
                 .send({ from: accounts[0], value: new BN("10000000000000000").add(new BN("2000000000000000000")) });
 
             // new inner contract should be created.
@@ -204,46 +204,46 @@ describe("Main Contract Tests", () => {
             innerContractInstance = new web3.eth.Contract(innerContractAbi, innerContractAddress);
         })
 
-        context("CEX - Deposit and Withdraw simultaneously", () => {
-            it("ERC20 tokens", async () => {
-                let initialBalanceofERC20inAcc0 = await erc20ContractInstance.methods.balanceOf(accounts[0]).call();
-                let initialBalanceofERC20inAcc1 = await erc20ContractInstance.methods.balanceOf(accounts[1]).call();
-                let initialBalanceofERC20inInner = await erc20ContractInstance.methods.balanceOf(innerContractAddress).call();
+        // context("CEX - Deposit and Withdraw simultaneously", () => {
+        //     it("ERC20 tokens", async () => {
+        //         let initialBalanceofERC20inAcc0 = await erc20ContractInstance.methods.balanceOf(accounts[0]).call();
+        //         let initialBalanceofERC20inAcc1 = await erc20ContractInstance.methods.balanceOf(accounts[1]).call();
+        //         let initialBalanceofERC20inInner = await erc20ContractInstance.methods.balanceOf(innerContractAddress).call();
 
-                await erc20ContractInstance.methods.approve(mixerContractInstance.options.address, "100000000000000000000")
-                    .send({ from: accounts[0] });
+        //         await erc20ContractInstance.methods.approve(mixerContractInstance.options.address, "100000000000000000000")
+        //             .send({ from: accounts[0] });
 
-                await mixerContractInstance.methods.depositTokens(erc20ContractInstance.options.address, "100000000000000000000", accounts[1], true)
-                    .send({ from: accounts[0], value: new BN("10000000000000000") });
+        //         await mixerContractInstance.methods.depositTokens(erc20ContractInstance.options.address, "100000000000000000000", accounts[1])
+        //             .send({ from: accounts[0], value: new BN("10000000000000000") });
 
-                let newBalanceofERC20inAcc0 = await erc20ContractInstance.methods.balanceOf(accounts[0]).call();
-                let newBalanceofERC20inAcc1 = await erc20ContractInstance.methods.balanceOf(accounts[1]).call();
-                let newBalanceofERC20inInner = await erc20ContractInstance.methods.balanceOf(innerContractAddress).call();
+        //         let newBalanceofERC20inAcc0 = await erc20ContractInstance.methods.balanceOf(accounts[0]).call();
+        //         let newBalanceofERC20inAcc1 = await erc20ContractInstance.methods.balanceOf(accounts[1]).call();
+        //         let newBalanceofERC20inInner = await erc20ContractInstance.methods.balanceOf(innerContractAddress).call();
 
-                expect(newBalanceofERC20inAcc0).to.be.bignumber.equal((new BN(initialBalanceofERC20inAcc0)).sub(new BN("100000000000000000000")));
-                expect(newBalanceofERC20inAcc1).to.be.bignumber.equal((new BN(initialBalanceofERC20inAcc1)).add(new BN("100000000000000000000")));
-                expect(newBalanceofERC20inInner).to.be.bignumber.equal(new BN(initialBalanceofERC20inInner));
-            })
+        //         expect(newBalanceofERC20inAcc0).to.be.bignumber.equal((new BN(initialBalanceofERC20inAcc0)).sub(new BN("100000000000000000000")));
+        //         expect(newBalanceofERC20inAcc1).to.be.bignumber.equal((new BN(initialBalanceofERC20inAcc1)).add(new BN("100000000000000000000")));
+        //         expect(newBalanceofERC20inInner).to.be.bignumber.equal(new BN(initialBalanceofERC20inInner));
+        //     })
 
-            it("Native tokens", async () => {
-                let initialBalanceofNativeinAcc0 = await network.provider.send("eth_getBalance", [accounts[0]]);
-                let initialBalanceofNativeinAcc1 = await network.provider.send("eth_getBalance", [accounts[1]]);
-                let initialBalanceofNativeinInner = await network.provider.send("eth_getBalance", [innerContractAddress]);
-                let initialBalanceofNativeinMain = await network.provider.send("eth_getBalance", [mixerContractInstance.options.address]);
+        //     it("Native tokens", async () => {
+        //         let initialBalanceofNativeinAcc0 = await network.provider.send("eth_getBalance", [accounts[0]]);
+        //         let initialBalanceofNativeinAcc1 = await network.provider.send("eth_getBalance", [accounts[1]]);
+        //         let initialBalanceofNativeinInner = await network.provider.send("eth_getBalance", [innerContractAddress]);
+        //         let initialBalanceofNativeinMain = await network.provider.send("eth_getBalance", [mixerContractInstance.options.address]);
 
-                await mixerContractInstance.methods.depositTokens(constants.ZERO_ADDRESS, "100000000000000000000", accounts[1], true)
-                    .send({ from: accounts[0], value: new BN("10000000000000000").add(new BN("100000000000000000000")) });
+        //         await mixerContractInstance.methods.depositTokens(constants.ZERO_ADDRESS, "100000000000000000000", accounts[1])
+        //             .send({ from: accounts[0], value: new BN("10000000000000000").add(new BN("100000000000000000000")) });
 
-                let newBalanceofNativeinAcc0 = await network.provider.send("eth_getBalance", [accounts[0]]);
-                let newBalanceofNativeinAcc1 = await network.provider.send("eth_getBalance", [accounts[1]]);
-                let newBalanceofNativeinInner = await network.provider.send("eth_getBalance", [innerContractAddress]);
-                let newBalanceofNativeinMain = await network.provider.send("eth_getBalance", [mixerContractInstance.options.address]);
+        //         let newBalanceofNativeinAcc0 = await network.provider.send("eth_getBalance", [accounts[0]]);
+        //         let newBalanceofNativeinAcc1 = await network.provider.send("eth_getBalance", [accounts[1]]);
+        //         let newBalanceofNativeinInner = await network.provider.send("eth_getBalance", [innerContractAddress]);
+        //         let newBalanceofNativeinMain = await network.provider.send("eth_getBalance", [mixerContractInstance.options.address]);
 
-                expect(newBalanceofNativeinAcc0).to.be.bignumber.lessThan((new BN(initialBalanceofNativeinAcc0)).sub(new BN("100000000000000000000"))); // less than because of Gas paid
-                expect(newBalanceofNativeinAcc1).to.be.bignumber.equal((new BN(initialBalanceofNativeinAcc1)).add(new BN("100000000000000000000")));
-                expect(newBalanceofNativeinInner).to.be.bignumber.equal(new BN(initialBalanceofNativeinInner));
-                expect(newBalanceofNativeinMain).to.be.bignumber.equal((new BN(initialBalanceofNativeinMain)).add(new BN("10000000000000000")));
-            })
-        })
+        //         expect(newBalanceofNativeinAcc0).to.be.bignumber.lessThan((new BN(initialBalanceofNativeinAcc0)).sub(new BN("100000000000000000000"))); // less than because of Gas paid
+        //         expect(newBalanceofNativeinAcc1).to.be.bignumber.equal((new BN(initialBalanceofNativeinAcc1)).add(new BN("100000000000000000000")));
+        //         expect(newBalanceofNativeinInner).to.be.bignumber.equal(new BN(initialBalanceofNativeinInner));
+        //         expect(newBalanceofNativeinMain).to.be.bignumber.equal((new BN(initialBalanceofNativeinMain)).add(new BN("10000000000000000")));
+        //     })
+        // })
     })
 })
