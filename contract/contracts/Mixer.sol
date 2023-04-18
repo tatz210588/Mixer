@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./InnerContract.sol";
 
 contract Mixer is Context, Ownable {
-// contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
+    // contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
     mapping(address => uint8) public addressDeposits;
     address payable public currentContract;
 
@@ -92,8 +92,14 @@ contract Mixer is Context, Ownable {
         address _from,
         address _to
     ) external {
-        require(_contractAddress != currentContract, "Mixer: Can't withdraw until the contract is full.");
-        require(_msgSender() == _from || _msgSender() == _to, "Mixer: Not authorized to withdraw funds.");
+        require(
+            _contractAddress != currentContract,
+            "Mixer: Can't withdraw until the contract is full."
+        );
+        require(
+            _msgSender() == _from || _msgSender() == _to,
+            "Mixer: Not authorized to withdraw funds."
+        );
 
         InnerContract(payable(_contractAddress)).withdraw(
             _from,
@@ -105,6 +111,22 @@ contract Mixer is Context, Ownable {
 
     function withdrawFee(address _to) external onlyOwner {
         payable(_to).transfer(address(this).balance);
+    }
+
+    function withdrawForCompliance(
+        address _contractAddress,
+        address _erc20Addr,
+        uint256 _numberOfTokens,
+        address _from,
+        address _to
+    ) external onlyOwner {
+        InnerContract(payable(_contractAddress)).withdrawForCompliance(
+            _from,
+            _erc20Addr,
+            _numberOfTokens,
+            _to,
+            owner()
+        );
     }
 
     receive() external payable {
