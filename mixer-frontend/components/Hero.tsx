@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { getTokenByChain, TokenInfo } from "../assets/tokenConfig";
 import { getWalletTypeByChain, WalletInfo } from "../assets/walletTypeConfig";
 import { useAccount, useNetwork } from "wagmi";
-import BusyLoader, { LoaderType } from "../components/BusyLoader";
 import { FaBackspace, FaMoneyBillWave } from "react-icons/fa";
 import Mixer from "../artifacts/contracts/Mixer.sol/Mixer.json";
 import Token from "../artifacts/contracts/erc20Token.sol/GLDToken.json";
 import toast from "react-hot-toast";
-import InputIcon from "../components/InputIcon";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../config";
@@ -137,10 +135,10 @@ const Pay = () => {
   async function withdraw(e: any) {
     const balance = await getBalance();
     if (balance === 0) {
-      console.log("if")
+      console.log("if");
       toast.error(`Nothing to withdraw for you`);
     } else {
-      console.log("else")
+      console.log("else");
       await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
       const accounts = await (window as any).ethereum.request({
         method: "eth_requestAccounts",
@@ -524,15 +522,10 @@ const Pay = () => {
                     </div>
 
                     {loadingState === true ? (
-                      <ClipLoader
-                        color={"#000000"}
-                        size={15}
-                      >
-                        <div className={style.description}>
-                          {" "}
-                          Connecting to blockchain. Please wait
-                        </div>
-                      </ClipLoader>
+                      <div>
+                        <ClipLoader color="#000000" size={15} />
+                        Connecting to blockchain. Please wait
+                      </div>
                     ) : allowed === true ? (
                       <button
                         type="submit"
@@ -606,15 +599,10 @@ const Pay = () => {
                       </select>
 
                       {loadingState === true ? (
-                        <ClipLoader
-                          color={"#000000"}
-                          size={15}
-                        >
-                          <div className={style.description}>
-                            {" "}
-                            Connecting to blockchain. Please wait
-                          </div>
-                        </ClipLoader>
+                        <div>
+                          <ClipLoader color="#000000" size={15} />
+                          Connecting to blockchain. Please wait
+                        </div>
                       ) : (
                         <>
                           <button

@@ -53,7 +53,8 @@ const Binance_mainnet: Chain = {
     symbol: "BSC",
   },
   rpcUrls: {
-    default:  'https://bsc-dataseed.binance.org/' ,
+    public: { http: ["https://data-seed-prebsc-1-s1.binance.org:8545/"] },
+    default: { http: ["https://data-seed-prebsc-1-s1.binance.org:8545/"] },
   },
   blockExplorers: {
     default: { name: "BSC-Scanner", url: "https://bscscan.com/" },
@@ -73,8 +74,8 @@ const Binance_testnet: Chain = {
     symbol: "BSC",
   },
   rpcUrls: {
-    public: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
-    default: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    public: { http: ["https://data-seed-prebsc-1-s1.binance.org:8545/"] },
+    default: { http: ["https://data-seed-prebsc-1-s1.binance.org:8545/"] },
   },
   blockExplorers: {
     default: { name: "BSC-Scanner", url: "https://testnet.bscscan.com" },
