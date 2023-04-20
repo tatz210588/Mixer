@@ -39,30 +39,7 @@ const successLoader = {
   },
 };
 
-const BRISE_Mainnet: Chain = {
-  id: 32520,
-  name: "BRISE-Mainnet",
-  network: "BRISE-Mainnet",
-  iconUrl:
-    "https://ipfs.infura.io/ipfs/QmV91sx1aWr2RhzF3LRq5M1qoGvYURaqTtsKjF3kiE88Xw",
-  iconBackground: "#d7fc03",
-  nativeCurrency: {
-    decimals: 18,
-    name: "BRISE",
-    symbol: "BRISE",
-  },
-  rpcUrls: {
-    public: { http: ['https://mainnet-rpc.brisescan.comc'] },
-    default: { http: ['https://mainnet-rpc.brisescan.comc'] },
-  },
-  blockExplorers: {
-    default: {
-      name: "Brise-Scanner",
-      url: "https://brisescan.com/",
-    },
-  },
-  testnet: true,
-};
+
 
 const Binance_mainnet: Chain = {
   id: 56,
@@ -76,8 +53,7 @@ const Binance_mainnet: Chain = {
     symbol: "BSC",
   },
   rpcUrls: {
-    public: { http: ['https://bsc-dataseed.binance.org/'] },
-    default: { http: ['https://bsc-dataseed.binance.org/'] },
+    default:  'https://bsc-dataseed.binance.org/' ,
   },
   blockExplorers: {
     default: { name: "BSC-Scanner", url: "https://bscscan.com/" },
@@ -97,8 +73,8 @@ const Binance_testnet: Chain = {
     symbol: "BSC",
   },
   rpcUrls: {
-    public: { http: ['https://data-seed-prebsc-1-s1.binance.org:8545/'] },
-    default: { http: ['https://data-seed-prebsc-1-s1.binance.org:8545/'] },
+    public: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    default: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
   },
   blockExplorers: {
     default: { name: "BSC-Scanner", url: "https://testnet.bscscan.com" },
@@ -107,7 +83,7 @@ const Binance_testnet: Chain = {
 };
 
 const { chains, provider } = configureChains(
-  [Binance_mainnet,Binance_testnet, BRISE_Mainnet],
+  [Binance_mainnet,Binance_testnet],
   [
     jsonRpcProvider({
       rpc: (chain) => ({

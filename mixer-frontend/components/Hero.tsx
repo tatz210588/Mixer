@@ -12,6 +12,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../config";
 import BigNumber from "bignumber.js";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const baseUrl = "https://mixer-backend.vercel.app";
 
@@ -515,18 +516,15 @@ const Pay = () => {
                           }))
                         }
                       >
-                        <InputIcon
+                        {/* <InputIcon
                           className="input-icon mr-8"
                           Icon={FaBackspace}
-                        />
+                        /> */}
                       </button>
                     </div>
 
                     {loadingState === true ? (
-                      <BusyLoader
-                        loaderType={LoaderType.Beat}
-                        wrapperClass="white-busy-container"
-                        className="white-busy-container"
+                      <ClipLoader
                         color={"#000000"}
                         size={15}
                       >
@@ -534,7 +532,7 @@ const Pay = () => {
                           {" "}
                           Connecting to blockchain. Please wait
                         </div>
-                      </BusyLoader>
+                      </ClipLoader>
                     ) : allowed === true ? (
                       <button
                         type="submit"
@@ -608,10 +606,7 @@ const Pay = () => {
                       </select>
 
                       {loadingState === true ? (
-                        <BusyLoader
-                          loaderType={LoaderType.Beat}
-                          wrapperClass="white-busy-container"
-                          className="white-busy-container"
+                        <ClipLoader
                           color={"#000000"}
                           size={15}
                         >
@@ -619,7 +614,7 @@ const Pay = () => {
                             {" "}
                             Connecting to blockchain. Please wait
                           </div>
-                        </BusyLoader>
+                        </ClipLoader>
                       ) : (
                         <>
                           <button
