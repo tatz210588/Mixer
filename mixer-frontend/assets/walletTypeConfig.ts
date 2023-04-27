@@ -10,9 +10,9 @@ const walletTypeConfig: Record<number, WalletInfo[]> = {
     {
       type: "Peer to Peer (P2P) Wallet",
     },
-    // {
-    //   type: "Centralized Exchange (CeX) Wallet",
-    // },
+    {
+      type: "Centralized Exchange (CeX) Wallet",
+    },
   ],
   "56": [
     {
