@@ -257,7 +257,7 @@ const Pay = () => {
           "0x0000000000000000000000000000000000000000",
           0,
           formInput?.target,
-          false,
+          // false,
           { value: etherPrice }
         );
       } else {
@@ -267,7 +267,7 @@ const Pay = () => {
           tokenAddr,
           ethers.utils.parseUnits(formInput?.amount.toString(), "ether"),
           formInput?.target,
-          false,
+          // false,
           { value: etherPrice }
         );
       }
