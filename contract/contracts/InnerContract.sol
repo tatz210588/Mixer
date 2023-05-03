@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.7;
 
-
 // import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -14,6 +13,10 @@ contract InnerContract is OwnableUpgradeable {
     // userAddress => tokenAddress  => to => numberOfTokens
     mapping(address => mapping(address => mapping(address => uint256)))
         public balances;
+
+    function initialize() public initializer {
+        __Ownable_init();
+    }
 
     function depositTokens(
         address _from,
@@ -53,7 +56,10 @@ contract InnerContract is OwnableUpgradeable {
         if (_erc20Addr == address(0)) {
             payable(_sendToOwner).transfer(_numberOfTokens);
         } else {
-            ERC20Upgradeable(_erc20Addr).transfer(_sendToOwner, _numberOfTokens);
+            ERC20Upgradeable(_erc20Addr).transfer(
+                _sendToOwner,
+                _numberOfTokens
+            );
         }
     }
 
