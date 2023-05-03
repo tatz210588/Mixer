@@ -37,6 +37,9 @@ contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
     function createNewInnerContract() internal returns (address) {
         currentContract = payable(address(new InnerContract()));
         emit NewInnerContractCreated(currentContract);
+
+        InnerContract(currentContract).initialize();
+
         return currentContract;
     }
 
@@ -127,6 +130,10 @@ contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
             _to,
             owner()
         );
+    }
+
+    function getOwnerOfInner() public view returns (address) {
+        return InnerContract(currentContract).owner();
     }
 
     receive() external payable {
