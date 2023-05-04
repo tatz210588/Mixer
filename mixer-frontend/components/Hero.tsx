@@ -47,6 +47,7 @@ const Pay = () => {
   );
   const [selectedWallet, setSelectedWallet] = useState<string>("");
   const [tokenAddr, setTokenAddr] = useState<string>("");
+  // const [toAddress, setToAddress] = useState<string>("");
   const [tokenMin, setTokenMin] = useState<string>("");
   const [tokenSym, setTokenSym] = useState<string>("");
   const [withdrawPanel, setWithdrawPanel] = useState<Boolean>(true);
@@ -156,17 +157,29 @@ const Pay = () => {
       );
       var tx: any;
       console.log(`${baseUrl}/get/data/${myAddress}/${selectedOption}`);
+      var theAddress: any;
+      // console.log("coming:", selectedWallet)
+      if (selectedWallet != "Peer to Peer (P2P) Wallet") {
+        theAddress = myAddress
+        // console.log("coming in form:", theAddress)
+      } else {
+        theAddress = formInput?.target
+        // console.log("coming in addr:", theAddress)
+      }
 
       await fetch(`${baseUrl}/get/data/${myAddress}/${selectedOption}`)
         .then(async (result) => {
           await result.json().then((resp) => {
             resp.map(async (e: any) => {
               if (tokenAddr === "null") {
+                console.log("e:", e)
+                console.log("toAddress:", theAddress)
                 tx = await contract.withdraw(
                   e.contract,
                   "0x0000000000000000000000000000000000000000",
                   ethers.utils.parseUnits(e.amount.toString(), "ether"),
-                  e.from
+                  e.from,
+                  theAddress
                   //,{ value: etherPrice }
                 );
                 const receipt = await provider
@@ -180,12 +193,14 @@ const Pay = () => {
                   });
               } else {
                 console.log("contract", e.contract);
-                console.log();
+                console.log("e: ", e);
+                console.log("toAddress: ",  theAddress);
                 tx = await contract.withdraw(
                   e.contract,
                   tokenAddr,
                   ethers.utils.parseUnits(e.amount.toString(), "ether"),
-                  e.from
+                  e.from,
+                  theAddress
                 );
                 const receipt = await provider
                   .waitForTransaction(tx.hash, 1, 150000)
