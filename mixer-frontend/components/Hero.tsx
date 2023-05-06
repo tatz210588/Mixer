@@ -12,7 +12,7 @@ import { getConfigByChain } from "../config";
 import BigNumber from "bignumber.js";
 import ClipLoader from "react-spinners/ClipLoader";
 
-const baseUrl = "https://mixer-backend.vercel.app";
+const baseUrl = "http://mixer-backend.vercel.app";
 
 const style = {
   wrapper: `relative`,
