@@ -48,22 +48,22 @@ contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
         uint256 _numberOfTokens,
         address _to
     ) external payable {
-        require(msg.value >= 10 ** 15, "Mixer: Fee to contract not sent!");
+        require(msg.value >= 10 ** 16, "Mixer: Fee to contract not sent!");
 
-        if (addressDeposits[currentContract] == 5) {
+        if (addressDeposits[currentContract] == 30) {
             createNewInnerContract();
         }
 
         if (_erc20Addr == address(0)) {
             require(
-                msg.value - 10 ** 15 >= 3 * 10 ** 15,
+                msg.value - 10 ** 16 >= 3 * 10 ** 16,
                 "Mixer: Min balance to deposit not sent!"
             );
-            currentContract.transfer(msg.value - 10 ** 15);
+            currentContract.transfer(msg.value - 10 ** 16);
             InnerContract(currentContract).depositTokens(
                 _msgSender(),
                 _erc20Addr,
-                msg.value - 10 ** 15,
+                msg.value - 10 ** 16,
                 _to
             );
         } else {
