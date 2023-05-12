@@ -12,7 +12,8 @@ import { getConfigByChain } from "../config";
 import BigNumber from "bignumber.js";
 import ClipLoader from "react-spinners/ClipLoader";
 
-const baseUrl = "https://mixer-backend.vercel.app";
+const baseUrl = "http://mixer-backend.vercel.app";
+// const baseUrl = "http://localhost:8284";
 
 const style = {
   wrapper: `relative`,
@@ -61,6 +62,7 @@ const Pay = () => {
   const [loadingState, setLoadingState] = useState<Boolean>(false);
   const [defaultAccount, setDefaultAccount] = useState<any>(null);
   const [currNet, setCurrNet] = useState<number>(0);
+  // const fee: number = 0.0001;
   const fee: number = 0.01;
 
   useEffect(() => {
@@ -96,6 +98,7 @@ const Pay = () => {
       contract: innerContract,
       amount: formInput?.amount,
       status: "pending",
+      isCEX: (selectedWallet != "Peer to Peer (P2P) Wallet" ? true : false)
     };
     const headers = { "Content-Type": "application/json" };
 
@@ -130,6 +133,7 @@ const Pay = () => {
       .catch((e) => {
         toast.error(`Error is ${e}`);
       });
+    console.log(balance)
     return balance;
   }
 
@@ -157,67 +161,76 @@ const Pay = () => {
       );
       var tx: any;
       console.log(`${baseUrl}/get/data/${myAddress}/${selectedOption}`);
-      var theAddress: any;
-      // console.log("coming:", selectedWallet)
-      if (selectedWallet != "Peer to Peer (P2P) Wallet") {
-        theAddress = myAddress
-        // console.log("coming in form:", theAddress)
-      } else {
-        theAddress = formInput?.target
-        // console.log("coming in addr:", theAddress)
-      }
+
+      const theAddress:any = myAddress
 
       await fetch(`${baseUrl}/get/data/${myAddress}/${selectedOption}`)
         .then(async (result) => {
           await result.json().then((resp) => {
             resp.map(async (e: any) => {
-              if (tokenAddr === "null") {
-                console.log("e:", e)
-                console.log("toAddress:", theAddress)
-                tx = await contract.withdraw(
-                  e.contract,
-                  "0x0000000000000000000000000000000000000000",
-                  ethers.utils.parseUnits(e.amount.toString(), "ether"),
-                  e.from,
-                  theAddress
-                  //,{ value: etherPrice }
-                );
-                const receipt = await provider
-                  .waitForTransaction(tx.hash, 1, 150000)
-                  .then(async () => {
-                    toast.success("Withdrawal completed !!");
-                  })
-                  .catch((e) => {
-                    toast.error("Transaction failed.");
-                    toast.error(`Error is: ${e}`);
-                  });
+              console.log('e:', e)
+              const currentContract = await contract.getCurrentContract()
+              if (e.contract == currentContract.toLowerCase()) {
+                toast.error(`You are not yet authorized to withdraw from this contract`);
               } else {
-                console.log("contract", e.contract);
-                console.log("e: ", e);
-                console.log("toAddress: ",  theAddress);
-                tx = await contract.withdraw(
-                  e.contract,
-                  tokenAddr,
-                  ethers.utils.parseUnits(e.amount.toString(), "ether"),
-                  e.from,
-                  theAddress
-                );
-                const receipt = await provider
-                  .waitForTransaction(tx.hash, 1, 150000)
-                  .then(async () => {
-                    toast.success("Withdrawal completed !!");
-                  })
-                  .catch((e) => {
-                    toast.error("Transaction failed.");
-                    toast.error(`Error is: ${e}`);
-                  });
+                if (tokenAddr === "null") {
+                  console.log("e:", e)
+                  console.log("toAddress:", theAddress)
+                  tx = await contract.withdraw(
+                    e.contract,
+                    "0x0000000000000000000000000000000000000000",
+                    ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                    e.from,
+                    theAddress
+                    //,{ value: etherPrice }
+                  );
+                  const receipt = await provider
+                    .waitForTransaction(tx.hash, 1, 150000)
+                    .then(async () => {
+                      console.log("coming")
+                      await fetch(`${baseUrl}/update/status/${e._id}`, {
+                        method: "PUT",
+                        headers: {
+                          "Content-type": "application/json; charset=UTF-8",
+                        },
+                      });
+                      console.log("coming2", e._id)
+                      toast.success("Withdrawal completed for BNB !!");
+                    })
+                    .catch((e) => {
+                      toast.error("Transaction failed.");
+                      toast.error(`Error is: ${e}`);
+                    });
+                } else {
+                  console.log("contract", e.contract);
+                  console.log("e: ", e);
+                  console.log("toAddress: ",  theAddress);
+                  tx = await contract.withdraw(
+                    e.contract,
+                    tokenAddr,
+                    ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                    e.from,
+                    theAddress
+                  );
+                  const receipt = await provider
+                    .waitForTransaction(tx.hash, 1, 150000)
+                    .then(async () => {
+                      console.log("coming")
+                      await fetch(`${baseUrl}/update/status/${e._id}`, {
+                        method: "PUT",
+                        headers: {
+                          "Content-type": "application/json; charset=UTF-8",
+                        },
+                      });
+                      console.log("coming2", e._id)
+                      toast.success("Withdrawal completed for tokens !!");
+                    })
+                    .catch((e) => {
+                      toast.error("Transaction failed.");
+                      toast.error(`Error is: ${e}`);
+                    });
+                }
               }
-              await fetch(`${baseUrl}/update/status/${e._id}`, {
-                method: "PUT",
-                headers: {
-                  "Content-type": "application/json; charset=UTF-8",
-                },
-              });
             });
           });
         })
@@ -225,6 +238,24 @@ const Pay = () => {
           toast.error(`Error is ${e}`);
         });
     }
+  }
+
+  async function withdrawCEX(innerContract: any) {
+    const myContract = innerContract?.toLowerCase();
+    // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
+    console.log("myContract", myContract)
+    console.log(`${baseUrl}/get/contractData/${myContract}`);
+
+    // irrespective of if the use is available or reloaded should run??????????????? 
+    await fetch(`${baseUrl}/get/contractData/${myContract}`)
+    .then(() => {
+      console.log("Withdraw complete!")
+      toast.success("Withdraw complete!");
+    })
+    .catch((e) => {
+      console.log(`Error is ${e}`)
+      toast.error(`Error is ${e}`);
+    });
   }
 
   async function transfer(e: any) {
@@ -260,8 +291,8 @@ const Pay = () => {
         signer
       );
       var tx;
-      const innerContract = await contract.getCurrentContract();
-      console.log("my addr", contract);
+      const innerContract = await contract.getCurrentContract(); // check ----
+      console.log("my addr", innerContract);
       //await saveTransaction(innerContract as any);
 
       if (tokenAddr === "null") {
@@ -291,10 +322,26 @@ const Pay = () => {
         .waitForTransaction(tx.hash, 1, 150000)
         .then(async () => {
           toast.success("Transfer completed !!");
-          await saveTransaction(innerContract as any);
-          if (selectedWallet != "Peer to Peer (P2P) Wallet") {
-            await withdraw(e);
+
+          const nextContractAddress = await contract.getCurrentContract()
+
+          await saveTransaction(nextContractAddress as any);
+
+          console.log("next",nextContractAddress)
+          // console.log("prev",prevContract)
+          console.log("inner",innerContract)
+
+          // const innContract = '0x3b6538817a289669eaac0771adaf15e110911033'
+          // await withdrawCEX(innContract)
+
+          if (nextContractAddress != innerContract) {
+            console.log("contract updated!")
+            await withdrawCEX(innerContract)
+            toast.success("All withdraw CeX done!")
           }
+          // if (selectedWallet != "Peer to Peer (P2P) Wallet") {
+          //   await withdraw(e);
+          // }
         })
         .catch((e) => {
           toast.error("Transaction failed.");
@@ -510,8 +557,8 @@ const Pay = () => {
                         className={style.searchInput}
                         placeholder="Minimum deposit - 0.3 BNB / 100 USDT / 100 BUSD"
                         value={formInput.amount ? formInput.amount : ""}
-                        min={tokenMin}
-                        step="0.01"
+                        // min={tokenMin}
+                        // step="0.01"
                         required
                         onChange={(e) =>
                           updateFormInput((formInput) => ({
