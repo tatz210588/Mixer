@@ -450,6 +450,7 @@ const Pay = () => {
                             token.name === "BNB"
                           ) {
                             setTokenMin("0.3");
+                            // setTokenMin("0.03");
                           } else if (
                             token.address ===
                               "0x55d398326f99059ff775485246999027b3197955" ||
