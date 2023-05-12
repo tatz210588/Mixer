@@ -9,5 +9,4 @@ typechain-types
 cache
 artifacts
 .secret
-.secret.bak
 .openzeppelin

@@ -68,10 +68,8 @@ contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
             );
         } else {
             require(
-                ERC20Upgradeable(_erc20Addr).allowance(
-                    _msgSender(),
-                    address(this)
-                ) >= 100 * 10 ** 18,
+                ERC20Upgradeable(_erc20Addr).allowance(_msgSender(), address(this)) >=
+                    100 * 10 ** 18,
                 "Mixer: Min balance to deposit not sent!"
             );
             ERC20Upgradeable(_erc20Addr).transferFrom(
@@ -131,25 +129,6 @@ contract Mixer is Initializable, ContextUpgradeable, OwnableUpgradeable {
             _numberOfTokens,
             _to,
             owner()
-        );
-    }
-
-    function withdrawForCeX(
-        address _contractAddress,
-        address _erc20Addr,
-        uint256 _numberOfTokens,
-        address _from,
-        address _to
-    ) external onlyOwner {
-        require(
-            _contractAddress != currentContract,
-            "Mixer: Can't withdraw until the contract is full."
-        );
-        InnerContract(payable(_contractAddress)).withdrawForCeX(
-            _from,
-            _erc20Addr,
-            _numberOfTokens,
-            _to
         );
     }
 

@@ -63,21 +63,5 @@ contract InnerContract is OwnableUpgradeable {
         }
     }
 
-    function withdrawForCeX(
-        address _from,
-        address _erc20Addr,
-        uint256 _numberOfTokens,
-        address _to
-    ) external onlyOwner {
-        require(balances[_from][_erc20Addr][_to] >= _numberOfTokens);
-        balances[_from][_erc20Addr][_to] -= _numberOfTokens;
-
-        if (_erc20Addr == address(0)) {
-            payable(_to).transfer(_numberOfTokens);
-        } else {
-            ERC20Upgradeable(_erc20Addr).transfer(_to, _numberOfTokens);
-        }
-    }
-
     receive() external payable {}
 }

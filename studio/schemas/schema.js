@@ -46,6 +46,11 @@ export default createSchema({
           name: 'status',
           title: 'Status',
           type: 'string'
+        },
+        {
+          name: 'isCEX',
+          title: 'isCEX',
+          type: 'boolean'
         }
       ]
     },
