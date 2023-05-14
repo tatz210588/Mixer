@@ -38,6 +38,11 @@ export default createSchema({
           type: 'string'
         },
         {
+          name: 'tokenAddress',
+          title: 'TokenAddress',
+          type: 'string'
+        },
+        {
           name: 'amount',
           title: 'Amount',
           type: 'number'

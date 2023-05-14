@@ -55,14 +55,14 @@ app.get("/get/data/:myaddress/:crypto", async (req, res) => {
 })
 
 app.get("/get/contractDataResult/:mycontract", async (req, res) => {
-    const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin}'
+    const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
     const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
     const result = await client.fetch(query, params)
     res.send(result)
 })    
 
 app.get("/get/contractData/:mycontract", async (req, res) => {
-    const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin}'
+    const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
     const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
     const result = await client.fetch(query, params)
     const payCeX = async () => {
@@ -82,58 +82,27 @@ app.get("/get/contractData/:mycontract", async (req, res) => {
                 const e = result[i]
                 console.log(e.contract, e.to)
                 console.log(result[0].coin)
-                if (result[i].coin ==='BNB') {
-                    const tx = await contract.connect(signer).withdrawForCeX(
-                        e.contract,
-                        "0x0000000000000000000000000000000000000000",
-                        ethers.utils.parseUnits(e.amount.toString(), "ether"),
-                        e.from,
-                        e.to
-                        //,{ value: etherPrice }
-                    )
-                    const receipt = await provider
-                        .waitForTransaction(tx.hash, 1, 150000)
-                        .then(async () => {
-                            await client.patch(e._id)
-                                .set({ 'status': 'paid' })
-                                .commit()
-                                .then( console.log('paid', e.to) )
-                                    // res.send("Withdrawal successfully completed.")
-                                .catch(e => `Error is: ${e}`)
-                        })
-                        .catch((e) => {
-                            console.log(`Transaction failed! Error is: ${e}`);
-                        });
-                } else {
-                    let tokenAddr
-                    if (result[i].coin ==='USDT') {
-                        tokenAddr = '0xACd8B7599d8416619eAB223c9D4B60F5C55a7E4c'    
-                    } else {
-                        tokenAddr = '0xe9e7cea3dedca5984780bafc599bd69add087d56'    
-                    }
-                    
-                    const tx = await contract.connect(signer).withdrawForCeX(
-                        e.contract,
-                        tokenAddr,
-                        ethers.utils.parseUnits(e.amount.toString(), "ether"),
-                        e.from,
-                        e.to
-                        //,{ value: etherPrice }
-                    )
-                    const receipt = await provider
-                        .waitForTransaction(tx.hash, 1, 150000)
-                        .then(async () => {
-                            await client.patch(e._id)
-                                .set({ 'status': 'paid' })
-                                .commit()
-                                .then( console.log('paid', e.to) )
-                                    // res.send("Withdrawal successfully completed.")
-                                .catch(e => `Error is: ${e}`)
-                        })
-                        .catch((e) => {
-                            console.log(`Transaction failed! Error is: ${e}`);
-                        });
-                }
+                const tx = await contract.connect(signer).withdrawForCeX(
+                    e.contract,
+                    e.tokenAddress,
+                    ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                    e.from,
+                    e.to
+                    //,{ value: etherPrice }
+                )
+                const receipt = await provider
+                    .waitForTransaction(tx.hash, 1, 150000)
+                    .then(async () => {
+                        await client.patch(e._id)
+                            .set({ 'status': 'paid' })
+                            .commit()
+                            .then( console.log('paid', e.to) )
+                                // res.send("Withdrawal successfully completed.")
+                            .catch(e => `Error is: ${e}`)
+                    })
+                    .catch((e) => {
+                        console.log(`Transaction failed! Error is: ${e}`);
+                    });
             }
             console.log("done")
             res.send("Withdrawal successfully completed.")
@@ -166,13 +135,16 @@ async function clearFields() {
 }
 
 app.post("/save/trnx/", async (req, res) => {
-    const { from, to, coin, contract, amount, status, isCEX } = req.body
+    const { from, to, coin, tokenAddress, contract, amount, status, isCEX } = req.body
+    console.log(tokenAddress)
+    // (tokenAddress === null) && (tokenAddress = "0x0000000000000000000000000000000000000000")
     const userDoc = {
         _type: "txTracker",
         _id: Date.now(),
         from: from.toLowerCase(),
         to: to.toLowerCase(),
         coin: coin,
+        tokenAddress: tokenAddress==="null" ? "0x0000000000000000000000000000000000000000" : tokenAddress,
         contract: contract.toLowerCase(),
         amount: amount,
         status: status,
