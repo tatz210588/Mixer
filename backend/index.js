@@ -39,6 +39,10 @@ const signer = wallet.connect(provider);
 
 //routes
 
+app.get("/", async (req, res) => {
+    res.json({message: "Hello World!"});
+});
+
 app.get("/get/balance/:myaddress/:crypto", async (req, res) => {
     const query = '*[_type == "txTracker" && to == $walletAddress && coin == $coin && status == $status] {amount}'
     const params = { walletAddress: req.params.myaddress, status: 'pending', coin: req.params.crypto }
@@ -46,6 +50,7 @@ app.get("/get/balance/:myaddress/:crypto", async (req, res) => {
     const summary = result.length != 0 ? result.map(bal => bal.amount).reduce((acc, bal) => bal + acc) : 0;
     res.send({ result: summary })
 })
+
 
 app.get("/get/data/:myaddress/:crypto", async (req, res) => {
     const query = '*[_type == "txTracker" && to == $walletAddress && coin == $coin && status == $status && isCEX == $isCEX] {_id,from,contract,amount,coin}'
