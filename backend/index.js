@@ -5,9 +5,11 @@ const sanityClient = require('@sanity/client')
 const keccak = require('keccak256')
 const getTokenByChain = require('./tokenConfig')
 const { response } = require("express")
-const myPrivateKey = 'asohmwkdib3ijn3vbbs9ejb5ja09djnwmmw'
+// const myPrivateKey = 'asohmwkdib3ijn3vbbs9ejb5ja09djnwmmw'
 const Web3 = require("web3")
 const { ethers } = require('ethers')
+const Mixer = require("./abi/mixer.json")
+require('dotenv').config()
 
 //Sanity Client configuration
 const client = sanityClient({
@@ -28,8 +30,18 @@ const web3 = new Web3()
 app.use(express.json())
 app.use(cors())
 
+// ethers
+const privateKey = process.env.VERCEL_PRIVATE_KEY
+const url = process.env.VERCEL_RPC_URL
+const provider = new ethers.providers.JsonRpcProvider(url);
+const wallet = new ethers.Wallet(privateKey, provider);
+const signer = wallet.connect(provider);
 
 //routes
+
+app.get("/", async (req, res) => {
+    res.json({message: "Hello World!"});
+});
 
 app.get("/get/balance/:myaddress/:crypto", async (req, res) => {
     const query = '*[_type == "txTracker" && to == $walletAddress && coin == $coin && status == $status] {amount}'
@@ -39,11 +51,72 @@ app.get("/get/balance/:myaddress/:crypto", async (req, res) => {
     res.send({ result: summary })
 })
 
+
 app.get("/get/data/:myaddress/:crypto", async (req, res) => {
-    const query = '*[_type == "txTracker" && to == $walletAddress && coin == $coin && status == $status] {_id,from,contract,amount,coin}'
-    const params = { walletAddress: req.params.myaddress, status: 'pending', coin: req.params.crypto }
+    const query = '*[_type == "txTracker" && to == $walletAddress && coin == $coin && status == $status && isCEX == $isCEX] {_id,from,contract,amount,coin}'
+    const params = { walletAddress: req.params.myaddress, status: 'pending', coin: req.params.crypto, isCEX: false }
     const result = await client.fetch(query, params)
     res.send(result)
+})
+
+app.get("/get/contractDataResult/:mycontract", async (req, res) => {
+    const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
+    const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
+    const result = await client.fetch(query, params)
+    res.send(result)
+})    
+
+app.get("/get/contractData/:mycontract", async (req, res) => {
+    const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
+    const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
+    const result = await client.fetch(query, params)
+    const payCeX = async () => {
+        const network = await provider.getNetwork()
+        console.log(network)
+        // const CurrNet = network?.chainId;
+        // console.log(CurrNet)
+        const contract = new ethers.Contract(
+        process.env.VERCEL_MIXER_ADDRESS,
+        Mixer.abi,
+        signer
+        )
+        console.log(signer.address)
+        if (result.length>0) {
+            for(let i=0; i<result.length; i++) {
+                console.log("i:", i, result[i])
+                const e = result[i]
+                console.log(e.contract, e.to)
+                console.log(result[0].coin)
+                const tx = await contract.connect(signer).withdrawForCeX(
+                    e.contract,
+                    e.tokenAddress,
+                    ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                    e.from,
+                    e.to
+                    //,{ value: etherPrice }
+                )
+                const receipt = await provider
+                    .waitForTransaction(tx.hash, 1, 150000)
+                    .then(async () => {
+                        await client.patch(e._id)
+                            .set({ 'status': 'paid' })
+                            .commit()
+                            .then( console.log('paid', e.to) )
+                                // res.send("Withdrawal successfully completed.")
+                            .catch(e => `Error is: ${e}`)
+                    })
+                    .catch((e) => {
+                        console.log(`Transaction failed! Error is: ${e}`);
+                    });
+            }
+            console.log("done")
+            res.send("Withdrawal successfully completed.")
+        } else {
+            res.send("No Withdrawal!")
+        }
+    }
+    payCeX()
+    // res.send(result)
 })
 
 app.put("/update/status/:id", async (req, res) => {
@@ -67,16 +140,20 @@ async function clearFields() {
 }
 
 app.post("/save/trnx/", async (req, res) => {
-    const { from, to, coin, contract, amount, status } = req.body
+    const { from, to, coin, tokenAddress, contract, amount, status, isCEX } = req.body
+    console.log(tokenAddress)
+    // (tokenAddress === null) && (tokenAddress = "0x0000000000000000000000000000000000000000")
     const userDoc = {
         _type: "txTracker",
         _id: Date.now(),
         from: from.toLowerCase(),
         to: to.toLowerCase(),
         coin: coin,
+        tokenAddress: tokenAddress==="null" ? "0x0000000000000000000000000000000000000000" : tokenAddress,
         contract: contract.toLowerCase(),
         amount: amount,
         status: status,
+        isCEX: isCEX,
     };
     try {
         const result = await client.create(userDoc);
@@ -178,7 +255,7 @@ const POLLING_INTERVAL = 5000; // 5 Seconds, business can edit
 setTimeout(async () => {
     //uncomment this line to reset the entire database
 
-    //clearFields()
+    // clearFields()
 }, POLLING_INTERVAL);
 
 app.listen(8284, () => console.log('Listening at 8284'))
