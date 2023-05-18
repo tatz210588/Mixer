@@ -315,12 +315,12 @@ const web3 = new Web3()
 app.use(express.json())
 app.use(cors())
 
-// ethers
-const privateKey = process.env.VERCEL_PRIVATE_KEY
-const url = process.env.VERCEL_RPC_URL
-const provider = new ethers.providers.JsonRpcProvider(url);
-const wallet = new ethers.Wallet(privateKey, provider);
-const signer = wallet.connect(provider);
+// // ethers
+// const privateKey = process.env.VERCEL_PRIVATE_KEY
+// const url = process.env.VERCEL_RPC_URL
+// const provider = new ethers.providers.JsonRpcProvider(url);
+// const wallet = new ethers.Wallet(privateKey, provider);
+// const signer = wallet.connect(provider);
 
 //routes
 
@@ -355,6 +355,13 @@ app.get("/get/contractData/:mycontract", async (req, res) => {
     const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
     const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
     const result = await client.fetch(query, params)
+    // ethers
+    const privateKey = process.env.VERCEL_PRIVATE_KEY
+    const url = process.env.VERCEL_RPC_URL
+    const provider = new ethers.providers.JsonRpcProvider(url)
+    const wallet = new ethers.Wallet(privateKey, provider)
+    const signer = wallet.connect(provider)
+
     const payCeX = async () => {
         const network = await provider.getNetwork()
         console.log(network)
