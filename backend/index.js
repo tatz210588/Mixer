@@ -61,7 +61,7 @@ app.get("/get/contractDataResult/:mycontract", async (req, res) => {
 app.get("/get/contractData/:mycontract", async (req, res) => {
     const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
     const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
-    const result = await client.fetch(query, params)
+    const result = await client.fetch(query, params, { mode: 'no-cors' })
     // ethers
     const privateKey = process.env.VERCEL_PRIVATE_KEY
     const url = process.env.VERCEL_RPC_URL
@@ -439,7 +439,7 @@ app.get("/get/contractData/:mycontract", async (req, res) => {
 app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
   const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
-  const result = await client.fetch(query, params)
+  const result = await client.fetch(query, params, { mode: 'no-cors' })
   // ethers
   const privateKey = process.env.VERCEL_PRIVATE_KEY
   const url = process.env.VERCEL_RPC_URL
@@ -817,7 +817,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
 app.get("/get/contractSend/P2P/:mycontract", async (req, res) => {
   const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: false }
-  const result = await client.fetch(query, params)
+  const result = await client.fetch(query, params, { mode: 'no-cors' })
   // ethers
   const privateKey = process.env.VERCEL_PRIVATE_KEY
   const url = process.env.VERCEL_RPC_URL
@@ -1195,7 +1195,7 @@ app.get("/get/contractSend/P2P/:mycontract", async (req, res) => {
 app.get("/get/contractCompliance/:mycontract", async (req, res) => {
   const query = '*[_type == "txTracker" && contract == $contractAddress && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending' }
-  const result = await client.fetch(query, params)
+  const result = await client.fetch(query, params, { mode: 'no-cors' })
   // ethers
   const privateKey = process.env.VERCEL_PRIVATE_KEY
   const url = process.env.VERCEL_RPC_URL
