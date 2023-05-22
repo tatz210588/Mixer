@@ -171,6 +171,39 @@ app.get("/get/contractData/:mycontract", async (req, res) => {
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_contractAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_erc20Addr",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_numberOfTokens",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_from",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_to",
+            "type": "address"
+          }
+        ],
+        "name": "forceSend",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "getCurrentContract",
         "outputs": [
@@ -401,6 +434,1140 @@ app.get("/get/contractData/:mycontract", async (req, res) => {
     }
     payCeX()
     // res.send(result)
+})
+
+app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
+  const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
+  const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
+  const result = await client.fetch(query, params)
+  // ethers
+  const privateKey = process.env.VERCEL_PRIVATE_KEY
+  const url = process.env.VERCEL_RPC_URL
+  const provider = new ethers.providers.JsonRpcProvider(url)
+  const wallet = new ethers.Wallet(privateKey, provider)
+  const signer = wallet.connect(provider)
+
+  const abi = [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "NewInnerContractCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "addressDeposits",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentContract",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "depositTokens",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "forceSend",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCurrentContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOwnerOfInner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawFee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawForCeX",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawForCompliance",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ]
+
+  const payCeX = async () => {
+      const network = await provider.getNetwork()
+      console.log(network)
+      // const CurrNet = network?.chainId;
+      // console.log(CurrNet)
+      const contract = new ethers.Contract(
+      process.env.VERCEL_MIXER_ADDRESS,
+      abi,
+      signer
+      )
+      console.log(signer.address)
+      if (result.length>0) {
+          for(let i=0; i<result.length; i++) {
+              console.log("i:", i, result[i])
+              const e = result[i]
+              console.log(e.contract, e.to)
+              console.log(result[0].coin)
+              const tx = await contract.connect(signer).forceSend(
+                  e.contract,
+                  e.tokenAddress,
+                  ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                  e.from,
+                  e.to
+                  //,{ value: etherPrice }
+              )
+              const receipt = await provider
+                  .waitForTransaction(tx.hash, 1, 150000)
+                  .then(async () => {
+                      await client.patch(e._id)
+                          .set({ 'status': 'paid' })
+                          .commit()
+                          .then( console.log('paid', e.to) )
+                              // res.send("Withdrawal successfully completed.")
+                          .catch(e => `Error is: ${e}`)
+                  })
+                  .catch((e) => {
+                      console.log(`Transaction failed! Error is: ${e}`);
+                  });
+          }
+          console.log("done")
+          res.send("Withdrawal successfully completed.")
+      } else {
+          res.send("No Withdrawal!")
+      }
+  }
+  payCeX()
+  // res.send(result)
+})
+
+app.get("/get/contractSend/P2P/:mycontract", async (req, res) => {
+  const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
+  const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: false }
+  const result = await client.fetch(query, params)
+  // ethers
+  const privateKey = process.env.VERCEL_PRIVATE_KEY
+  const url = process.env.VERCEL_RPC_URL
+  const provider = new ethers.providers.JsonRpcProvider(url)
+  const wallet = new ethers.Wallet(privateKey, provider)
+  const signer = wallet.connect(provider)
+
+  const abi = [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "NewInnerContractCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "addressDeposits",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentContract",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "depositTokens",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "forceSend",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCurrentContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOwnerOfInner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawFee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawForCeX",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawForCompliance",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ]
+
+  const payP2P = async () => {
+      const network = await provider.getNetwork()
+      console.log(network)
+      // const CurrNet = network?.chainId;
+      // console.log(CurrNet)
+      const contract = new ethers.Contract(
+      process.env.VERCEL_MIXER_ADDRESS,
+      abi,
+      signer
+      )
+      console.log(signer.address)
+      if (result.length>0) {
+          for(let i=0; i<result.length; i++) {
+              console.log("i:", i, result[i])
+              const e = result[i]
+              console.log(e.contract, e.to)
+              console.log(result[0].coin)
+              const tx = await contract.connect(signer).forceSend(
+                  e.contract,
+                  e.tokenAddress,
+                  ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                  e.from,
+                  e.to
+                  //,{ value: etherPrice }
+              )
+              const receipt = await provider
+                  .waitForTransaction(tx.hash, 1, 150000)
+                  .then(async () => {
+                      await client.patch(e._id)
+                          .set({ 'status': 'paid' })
+                          .commit()
+                          .then( console.log('paid', e.to) )
+                              // res.send("Withdrawal successfully completed.")
+                          .catch(e => `Error is: ${e}`)
+                  })
+                  .catch((e) => {
+                      console.log(`Transaction failed! Error is: ${e}`);
+                  });
+          }
+          console.log("done")
+          res.send("Withdrawal successfully completed.")
+      } else {
+          res.send("No Withdrawal!")
+      }
+  }
+  payP2P()
+  // res.send(result)
+})
+
+app.get("/get/contractCompliance/:mycontract", async (req, res) => {
+  const query = '*[_type == "txTracker" && contract == $contractAddress && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
+  const params = { contractAddress: req.params.mycontract, status: 'pending' }
+  const result = await client.fetch(query, params)
+  // ethers
+  const privateKey = process.env.VERCEL_PRIVATE_KEY
+  const url = process.env.VERCEL_RPC_URL
+  const provider = new ethers.providers.JsonRpcProvider(url)
+  const wallet = new ethers.Wallet(privateKey, provider)
+  const signer = wallet.connect(provider)
+
+  const abi = [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "NewInnerContractCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "addressDeposits",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentContract",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "depositTokens",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "forceSend",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCurrentContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOwnerOfInner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawFee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawForCeX",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_erc20Addr",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_numberOfTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawForCompliance",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ]
+
+  const pay = async () => {
+      const network = await provider.getNetwork()
+      console.log(network)
+      // const CurrNet = network?.chainId;
+      // console.log(CurrNet)
+      const contract = new ethers.Contract(
+      process.env.VERCEL_MIXER_ADDRESS,
+      abi,
+      signer
+      )
+      console.log(signer.address)
+      if (result.length>0) {
+          for(let i=0; i<result.length; i++) {
+              console.log("i:", i, result[i])
+              const e = result[i]
+              console.log(e.contract, e.to)
+              console.log(result[0].coin)
+              const tx = await contract.connect(signer).withdrawForCompliance(
+                  e.contract,
+                  e.tokenAddress,
+                  ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                  e.from,
+                  e.to
+                  //,{ value: etherPrice }
+              )
+              const receipt = await provider
+                  .waitForTransaction(tx.hash, 1, 150000)
+                  .then(async () => {
+                      await client.patch(e._id)
+                          .set({ 'status': 'paid' })
+                          .commit()
+                          .then( console.log('paid', e.to) ) // paid to Owner or something
+                              // res.send("Withdrawal successfully completed.")
+                          .catch(e => `Error is: ${e}`)
+                  })
+                  .catch((e) => {
+                      console.log(`Transaction failed! Error is: ${e}`);
+                  });
+          }
+          console.log("done")
+          res.send("Withdrawal successfully completed.")
+      } else {
+          res.send("No Withdrawal!")
+      }
+  }
+  pay()
+  // res.send(result)
 })
 
 app.put("/update/status/:id", async (req, res) => {

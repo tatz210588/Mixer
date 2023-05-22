@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import { getTokenByChain, TokenInfo } from "../assets/tokenConfig";
 import { getWalletTypeByChain, WalletInfo } from "../assets/walletTypeConfig";
-import { useAccount, useNetwork } from "wagmi";
-import { FaBackspace, FaMoneyBillWave } from "react-icons/fa";
+// import { useAccount, useNetwork } from "wagmi";
+// import { FaBackspace, FaMoneyBillWave } from "react-icons/fa";
 import Mixer from "../artifacts/contracts/Mixer.sol/Mixer.json";
 import Token from "../artifacts/contracts/erc20Token.sol/GLDToken.json";
 import toast from "react-hot-toast";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+// import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../config";
 import BigNumber from "bignumber.js";
 import ClipLoader from "react-spinners/ClipLoader";
 
-const baseUrl = "http://mixer-backend.vercel.app";
+// const baseUrl = "http://mixer-backend.vercel.app";
 // const baseUrl = "http://localhost:8284";
+const baseUrl = "http://mixer-rho.vercel.app";
+// const baseUrl = "https://mixer-weld.vercel.app";
 
 const style = {
   wrapper: `relative`,
@@ -51,6 +53,7 @@ const Pay = () => {
   // const [toAddress, setToAddress] = useState<string>("");
   const [tokenMin, setTokenMin] = useState<string>("");
   const [tokenSym, setTokenSym] = useState<string>("");
+  const [owner, setOwner] = useState<Boolean>(false);
   const [withdrawPanel, setWithdrawPanel] = useState<Boolean>(true);
   const [selectedOption, setSelectedOption] = useState<string>();
   const [balanceToken, setBalanceToken] = useState(defaults.balanceToken);
@@ -58,17 +61,27 @@ const Pay = () => {
     target: "",
     amount: 0.0,
   });
+  const [formInputSendCeX, updateFormInputSendCeX] = useState({
+    target: "",
+  });
+  const [formInputSendP2P, updateFormInputSendP2P] = useState({
+    target: "",
+  });
+  const [formInputCompliance, updateFormInputCompliance] = useState({
+    target: "",
+  });
   const [allowed, setAllowed] = useState<any>(false);
   const [loadingState, setLoadingState] = useState<Boolean>(false);
   const [defaultAccount, setDefaultAccount] = useState<any>(null);
   const [currNet, setCurrNet] = useState<number>(0);
-  // const fee: number = 0.0001;
-  const fee: number = 0.01;
+  const fee: number = 0.0001;
+  // const fee: number = 0.01;
 
   useEffect(() => {
     onLoad();
     setAvailableTokens(getTokenByChain(currNet));
     setAvailableWalletType(getWalletTypeByChain(currNet));
+    getOwner();
   }, [currNet, defaultAccount]);
 
   const onLoad = async () => {
@@ -85,6 +98,32 @@ const Pay = () => {
     setCurrNet(network?.chainId);
   };
 
+  const getOwner = async () => {
+    await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
+    const accounts = await (window as any).ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const myAddress = accounts[0];
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    ); //create provider
+    const signer = provider.getSigner();
+    const network = await provider.getNetwork();
+    const contract = new ethers.Contract(
+      getConfigByChain(network?.chainId)[0].mixerAddress,
+      Mixer.abi,
+      signer
+    );
+    const owner = await contract.owner()
+    console.log(owner)
+    console.log(myAddress)
+    // if (owner === myAddress) {
+      setOwner(true)
+    // } else {
+    //   setOwner(false)
+    // }
+  }; 
+
   const saveTransaction = async (innerContract: any) => {
     await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
     const accounts = await (window as any).ethereum.request({
@@ -95,6 +134,7 @@ const Pay = () => {
       from: myAddress,
       to: formInput?.target,
       coin: selectedOption,
+      tokenAddress: tokenAddr,
       contract: innerContract,
       amount: formInput?.amount,
       status: "pending",
@@ -162,76 +202,82 @@ const Pay = () => {
       var tx: any;
       console.log(`${baseUrl}/get/data/${myAddress}/${selectedOption}`);
 
-      const theAddress:any = myAddress
+      // const theAddress:any = myAddress
 
       await fetch(`${baseUrl}/get/data/${myAddress}/${selectedOption}`)
         .then(async (result) => {
           await result.json().then((resp) => {
-            resp.map(async (e: any) => {
-              console.log('e:', e)
-              const currentContract = await contract.getCurrentContract()
-              if (e.contract == currentContract.toLowerCase()) {
-                toast.error(`You are not yet authorized to withdraw from this contract`);
-              } else {
-                if (tokenAddr === "null") {
-                  console.log("e:", e)
-                  console.log("toAddress:", theAddress)
-                  tx = await contract.withdraw(
-                    e.contract,
-                    "0x0000000000000000000000000000000000000000",
-                    ethers.utils.parseUnits(e.amount.toString(), "ether"),
-                    e.from,
-                    theAddress
-                    //,{ value: etherPrice }
-                  );
-                  const receipt = await provider
-                    .waitForTransaction(tx.hash, 1, 150000)
-                    .then(async () => {
-                      console.log("coming")
-                      await fetch(`${baseUrl}/update/status/${e._id}`, {
-                        method: "PUT",
-                        headers: {
-                          "Content-type": "application/json; charset=UTF-8",
-                        },
-                      });
-                      console.log("coming2", e._id)
-                      toast.success("Withdrawal completed for BNB !!");
-                    })
-                    .catch((e) => {
-                      toast.error("Transaction failed.");
-                      toast.error(`Error is: ${e}`);
-                    });
+            console.log(resp.length)
+            if (resp.length <= 0) {
+              console.log("coming in if")
+              toast.error(`You are not yet allowed to withdraw from this contract!`);
+            } else {
+              resp.map(async (e: any) => {
+                console.log('e:', e)
+                const currentContract = await contract.getCurrentContract()
+                if (e.contract == currentContract.toLowerCase()) {
+                  toast.error(`You are not yet authorized to withdraw from this contract`);
                 } else {
-                  console.log("contract", e.contract);
-                  console.log("e: ", e);
-                  console.log("toAddress: ",  theAddress);
-                  tx = await contract.withdraw(
-                    e.contract,
-                    tokenAddr,
-                    ethers.utils.parseUnits(e.amount.toString(), "ether"),
-                    e.from,
-                    theAddress
-                  );
-                  const receipt = await provider
-                    .waitForTransaction(tx.hash, 1, 150000)
-                    .then(async () => {
-                      console.log("coming")
-                      await fetch(`${baseUrl}/update/status/${e._id}`, {
-                        method: "PUT",
-                        headers: {
-                          "Content-type": "application/json; charset=UTF-8",
-                        },
+                  if (tokenAddr === "null") {
+                    console.log("e:", e)
+                    console.log("toAddress:", myAddress)
+                    tx = await contract.withdraw(
+                      e.contract,
+                      "0x0000000000000000000000000000000000000000",
+                      ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                      e.from,
+                      myAddress
+                      //,{ value: etherPrice }
+                    );
+                    const receipt = await provider
+                      .waitForTransaction(tx.hash, 1, 150000)
+                      .then(async () => {
+                        console.log("coming")
+                        await fetch(`${baseUrl}/update/status/${e._id}`, {
+                          method: "PUT",
+                          headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                          },
+                        });
+                        console.log("coming2", e._id)
+                        toast.success("Withdrawal completed for BNB !!");
+                      })
+                      .catch((e) => {
+                        toast.error("Transaction failed.");
+                        toast.error(`Error is: ${e}`);
                       });
-                      console.log("coming2", e._id)
-                      toast.success("Withdrawal completed for tokens !!");
-                    })
-                    .catch((e) => {
-                      toast.error("Transaction failed.");
-                      toast.error(`Error is: ${e}`);
-                    });
+                  } else {
+                    console.log("contract", e.contract);
+                    console.log("e: ", e);
+                    console.log("toAddress: ",  myAddress);
+                    tx = await contract.withdraw(
+                      e.contract,
+                      tokenAddr,
+                      ethers.utils.parseUnits(e.amount.toString(), "ether"),
+                      e.from,
+                      myAddress
+                    );
+                    const receipt = await provider
+                      .waitForTransaction(tx.hash, 1, 150000)
+                      .then(async () => {
+                        console.log("coming")
+                        await fetch(`${baseUrl}/update/status/${e._id}`, {
+                          method: "PUT",
+                          headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                          },
+                        });
+                        console.log("coming2", e._id)
+                        toast.success("Withdrawal completed for tokens !!");
+                      })
+                      .catch((e) => {
+                        toast.error("Transaction failed.");
+                        toast.error(`Error is: ${e}`);
+                      });
+                  }
                 }
-              }
-            });
+              });
+            }
           });
         })
         .catch((e) => {
@@ -248,6 +294,64 @@ const Pay = () => {
 
     // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractData/${myContract}`)
+    .then(() => {
+      console.log("Withdraw complete!")
+      toast.success("Withdraw complete!");
+    })
+    .catch((e) => {
+      console.log(`Error is ${e}`)
+      toast.error(`Error is ${e}`);
+    });
+  }
+
+  async function forceSendCEX() {
+    // const myContract = innerContract?.toLowerCase();
+    const myContract = formInputSendCeX.target?.toLowerCase();
+    // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
+    console.log("myContract", myContract)
+    console.log(`${baseUrl}/get/contractSend/CeX/${myContract}`);
+
+    // irrespective of if the use is available or reloaded should run??????????????? 
+    await fetch(`${baseUrl}/get/contractSend/CeX/${myContract}`)
+    .then(() => {
+      console.log("Withdraw complete!")
+      toast.success("Withdraw complete!");
+    })
+    .catch((e) => {
+      console.log(`Error is ${e}`)
+      toast.error(`Error is ${e}`);
+    });
+  }
+
+  async function forceSendP2P() {
+    // const myContract = innerContract?.toLowerCase();
+    const myContract = formInputSendP2P.target?.toLowerCase();
+    // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
+    console.log("myContract", myContract)
+    console.log(`${baseUrl}/get/contractSend/P2P/${myContract}`);
+
+    // irrespective of if the use is available or reloaded should run??????????????? 
+    await fetch(`${baseUrl}/get/contractSend/P2P/${myContract}`)
+    .then(() => {
+      console.log("Withdraw complete!")
+      toast.success("Withdraw complete!");
+    })
+    .catch((e) => {
+      console.log(`Error is ${e}`)
+      toast.error(`Error is ${e}`);
+    });
+  }
+
+  async function withdrawForCompliance() {
+    // const myContract = innerContract?.toLowerCase();
+    const myContract = formInputCompliance.target?.toLowerCase();
+    formInputCompliance
+    // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
+    console.log("myContract", myContract)
+    console.log(`${baseUrl}/get/contractCompliance/${myContract}`);
+
+    // irrespective of if the use is available or reloaded should run??????????????? 
+    await fetch(`${baseUrl}/get/contractCompliance/${myContract}`)
     .then(() => {
       console.log("Withdraw complete!")
       toast.success("Withdraw complete!");
@@ -445,20 +549,20 @@ const Pay = () => {
                           setTokenAddr(token.address);
                           setTokenSym(token.symbol);
                           checkAllowance(token.address);
-                          if (
-                            token.address === "null" &&
-                            token.name === "BNB"
-                          ) {
-                            setTokenMin("0.3");
-                            // setTokenMin("0.03");
-                          } else if (
-                            token.address ===
-                              "0x55d398326f99059ff775485246999027b3197955" ||
-                            token.address ===
-                              "0xe9e7cea3dedca5984780bafc599bd69add087d56"
-                          ) {
-                            setTokenMin("100");
-                          }
+                          // if (
+                          //   token.address === "null" &&
+                          //   token.name === "BNB"
+                          // ) {
+                          //   setTokenMin("0.03");
+                          //   // setTokenMin("0.03");
+                          // } else if (
+                          //   token.address ===
+                          //     "0x55d398326f99059ff775485246999027b3197955" ||
+                          //   token.address ===
+                          //     "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+                          // ) {
+                          //   setTokenMin("100");
+                          // }
                         }
                         //await loadBalance(token);
                       }}
@@ -690,6 +794,190 @@ const Pay = () => {
               </div>
             )}
           </div>
+          {owner && (
+            <>
+            <div className={style.glowDivBox}>
+              <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full">
+                <>
+                  <div className={style.details}>
+                    <span className="flex flex-wrap justify-center space-x-5">
+                      <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
+                        Force Send CeX
+                      </span>
+                    </span>
+                    <span className="flex flex-wrap items-center justify-center space-x-5">
+                      <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
+                        Force send the CeX transactions to the wallet even before the contract is full
+                      </span>
+                    </span>
+                  </div>
+
+                  <div className="font-bold drop-shadow-xl">
+
+                    {loadingState === true ? (
+                      <div>
+                        <ClipLoader color="#000000" size={15} />
+                        Connecting to blockchain. Please wait
+                      </div>
+                    ) : (
+                      <>
+                        <div className={style.info}>
+                        <div className={style.infoLeft}>
+                          <div className="mt-4 text-sm font-bold text-[#000000]">
+                            Contract Address:
+                          </div>
+                        </div>
+                        </div>
+                        <div className={style.searchBar}>
+                          <input
+                            type="text"
+                            className={style.searchInput}
+                            placeholder=""
+                            required
+                            value={formInputSendCeX.target}
+                            onChange={(e) =>
+                              updateFormInputSendCeX((formInputSendCeX) => ({
+                                ...formInputSendCeX,
+                                target: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          onClick={forceSendCEX}
+                          className={style.nftButton}
+                        >
+                          Force Send CeX
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </>
+              </div>
+            </div>
+            <div className={style.glowDivBox}>
+              <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full">
+                <>
+                  <div className={style.details}>
+                    <span className="flex flex-wrap justify-center space-x-5">
+                      <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
+                        Force Send P2P
+                      </span>
+                    </span>
+                    <span className="flex flex-wrap items-center justify-center space-x-5">
+                      <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
+                        Force send the P2P transactions to the wallet even before the contract is full
+                      </span>
+                    </span>
+                  </div>
+
+                  <div className="font-bold drop-shadow-xl">
+
+                    {loadingState === true ? (
+                      <div>
+                        <ClipLoader color="#000000" size={15} />
+                        Connecting to blockchain. Please wait
+                      </div>
+                    ) : (
+                      <>
+                        <div className={style.info}>
+                        <div className={style.infoLeft}>
+                          <div className="mt-4 text-sm font-bold text-[#000000]">
+                            Contract Address:
+                          </div>
+                        </div>
+                        </div>
+                        <div className={style.searchBar}>
+                          <input
+                            type="text"
+                            className={style.searchInput}
+                            placeholder=""
+                            required
+                            value={formInputSendP2P.target}
+                            onChange={(e) =>
+                              updateFormInputSendP2P((formInputSendP2P) => ({
+                                ...formInputSendP2P,
+                                target: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          onClick={forceSendP2P}
+                          className={style.nftButton}
+                        >
+                          Force Send P2P
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </>
+              </div>
+            </div>
+            <div className={style.glowDivBox}>
+              <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full">
+                <>
+                  <div className={style.details}>
+                    <span className="flex flex-wrap justify-center space-x-5">
+                      <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
+                        Withdraw Compliance
+                      </span>
+                    </span>
+                    <span className="flex flex-wrap items-center justify-center space-x-5">
+                      <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
+                        Withdraw Compliance transactions to the owner wallet
+                      </span>
+                    </span>
+                  </div>
+
+                  <div className="font-bold drop-shadow-xl">
+
+                    {loadingState === true ? (
+                      <div>
+                        <ClipLoader color="#000000" size={15} />
+                        Connecting to blockchain. Please wait
+                      </div>
+                    ) : (
+                      <>
+                        <div className={style.info}>
+                        <div className={style.infoLeft}>
+                          <div className="mt-4 text-sm font-bold text-[#000000]">
+                            Contract Address:
+                          </div>
+                        </div>
+                        </div>
+                        <div className={style.searchBar}>
+                          <input
+                            type="text"
+                            className={style.searchInput}
+                            placeholder=""
+                            required
+                            value={formInputCompliance.target}
+                            onChange={(e) =>
+                              updateFormInputCompliance((formInputCompliance) => ({
+                                ...formInputCompliance,
+                                target: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          onClick={withdrawForCompliance}
+                          className={style.nftButton}
+                        >
+                          withdraw For Compliance
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </>
+              </div>
+            </div>
+            </>
+          )}
         </div>
       </div>
     </div>
