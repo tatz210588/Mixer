@@ -32,7 +32,7 @@ app.use(cors())
 
 //routes
 app.get("/", async (req, res) => {
-    res.json({message: "Hello World!"});
+    res.json({message: "Hello World !!!"});
 });
 
 app.get("/get/balance/:myaddress/:crypto", async (req, res) => {
