@@ -29,7 +29,7 @@ const web3 = new Web3()
 //middleware
 app.use(express.json())
 app.use(cors({
-  origin: "*",
+  origin: "http://localhost:3000",
 }))
 
 //routes
