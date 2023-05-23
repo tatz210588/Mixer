@@ -777,11 +777,9 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
       // console.log(network)
       // const CurrNet = network?.chainId;
       // console.log(CurrNet)
-      const contract = new ethers.Contract(
-      process.env.VERCEL_MIXER_ADDRESS,
-      abi,
-      signer
-      )
+      
+
+
       // console.log(signer.address)
       if (result.length>0) {
           for(let i=0; i<result.length; i++) {
@@ -789,7 +787,14 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
               const e = result[i]
               // console.log(e.contract, e.to)
               // console.log(result[0].coin)
-              res.send(signer)
+              
+              const contract = new ethers.Contract(
+              process.env.VERCEL_MIXER_ADDRESS,
+              abi,
+              signer
+              )
+
+              res.send(process.env.VERCEL_MIXER_ADDRESS)
 
               const tx = await contract.connect(signer).forceSend(
                   e.contract,
@@ -799,6 +804,8 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
                   e.to
                   //,{ value: etherPrice }
               )
+
+              
               
               const receipt = await provider
                   .waitForTransaction(tx.hash, 1, 150000)
