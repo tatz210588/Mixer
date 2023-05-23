@@ -795,7 +795,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
               )
 
 
-              const tx = await contract.connect(signer).forceSend(
+              const tx = await contract.forceSend(
                   e.contract,
                   e.tokenAddress,
                   ethers.utils.parseUnits(e.amount.toString(), "ether"),
