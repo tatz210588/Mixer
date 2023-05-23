@@ -782,7 +782,6 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
       abi,
       signer
       )
-      res.send("contract")
       // console.log(signer.address)
       if (result.length>0) {
           for(let i=0; i<result.length; i++) {
@@ -798,6 +797,8 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
                   e.to
                   //,{ value: etherPrice }
               )
+              res.send(tx)
+              
               const receipt = await provider
                   .waitForTransaction(tx.hash, 1, 150000)
                   .then(async () => {
