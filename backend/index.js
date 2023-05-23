@@ -442,12 +442,10 @@ app.get("/get/contractSends/CeX/:mycontract", async (req, res) => {
 })
 
 app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
-  console.log("cominghere")
   const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
   const result = await client.fetch(query, params)
   // ethers
-  console.log("cominghere")
   const privateKey = process.env.VERCEL_PRIVATE_KEY
   const url = process.env.VERCEL_RPC_URL
   const provider = new ethers.providers.JsonRpcProvider(url)
@@ -774,7 +772,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
 
   // const payCeX = async () => {
       const network = await provider.getNetwork()
-      console.log(network)
+      // console.log(network)
       // const CurrNet = network?.chainId;
       // console.log(CurrNet)
       const contract = new ethers.Contract(
@@ -782,13 +780,13 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
       abi,
       signer
       )
-      console.log(signer.address)
+      // console.log(signer.address)
       if (result.length>0) {
           for(let i=0; i<result.length; i++) {
-              console.log("i:", i, result[i])
+              // console.log("i:", i, result[i])
               const e = result[i]
-              console.log(e.contract, e.to)
-              console.log(result[0].coin)
+              // console.log(e.contract, e.to)
+              // console.log(result[0].coin)
               const tx = await contract.connect(signer).forceSend(
                   e.contract,
                   e.tokenAddress,
@@ -803,15 +801,15 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
                       await client.patch(e._id)
                           .set({ 'status': 'paid' })
                           .commit()
-                          .then( console.log('paid', e.to) )
+                          .then( res.send(`paid - ${e.to}`) )
                               // res.send("Withdrawal successfully completed.")
                           .catch(e => `Error is: ${e}`)
                   })
                   .catch((e) => {
-                      console.log(`Transaction failed! Error is: ${e}`);
+                      res.send(`Transaction failed! Error is: ${e}`);
                   });
           }
-          console.log("done")
+          // console.log("done")
           res.send("Withdrawal successfully completed.")
       } else {
           res.send("No Withdrawal!")
