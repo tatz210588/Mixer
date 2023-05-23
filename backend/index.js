@@ -32,7 +32,7 @@ app.use(cors())
 
 //routes
 app.get("/", async (req, res) => {
-    res.json({message: "Hello World !!!"});
+    res.json({message: "Hello Worlds !!!"});
 });
 
 app.get("/get/balance/:myaddress/:crypto", async (req, res) => {
@@ -437,7 +437,7 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
 })
 
 app.get("/get/contractSends/CeX/:mycontract", async (req, res) => {
-  console.log("coming here! ", req.params.mycontract)
+  console.log("coming here! ")
 })
 
 app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
