@@ -794,7 +794,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
               signer
               )
 
-              res.send(process.env.VERCEL_MIXER_ADDRESS)
+              res.send(contract)
 
               const tx = await contract.connect(signer).forceSend(
                   e.contract,
