@@ -789,6 +789,8 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
               const e = result[i]
               // console.log(e.contract, e.to)
               // console.log(result[0].coin)
+              res.send(signer)
+
               const tx = await contract.connect(signer).forceSend(
                   e.contract,
                   e.tokenAddress,
@@ -797,7 +799,6 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
                   e.to
                   //,{ value: etherPrice }
               )
-              res.send(tx)
               
               const receipt = await provider
                   .waitForTransaction(tx.hash, 1, 150000)
