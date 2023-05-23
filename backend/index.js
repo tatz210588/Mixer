@@ -436,11 +436,13 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
     // res.send(result)
 })
 
-app.put("/get/contractSend/CeX/:mycontract", async (req, res) => {
+app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
+  console.log("cominghere")
   const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
   const result = await client.fetch(query, params)
   // ethers
+  console.log("cominghere")
   const privateKey = process.env.VERCEL_PRIVATE_KEY
   const url = process.env.VERCEL_RPC_URL
   const provider = new ethers.providers.JsonRpcProvider(url)
@@ -765,7 +767,7 @@ app.put("/get/contractSend/CeX/:mycontract", async (req, res) => {
     }
   ]
 
-  const payCeX = async () => {
+  // const payCeX = async () => {
       const network = await provider.getNetwork()
       console.log(network)
       // const CurrNet = network?.chainId;
@@ -809,8 +811,8 @@ app.put("/get/contractSend/CeX/:mycontract", async (req, res) => {
       } else {
           res.send("No Withdrawal!")
       }
-  }
-  payCeX()
+  // }
+  // payCeX()
   // res.send(result)
 })
 
