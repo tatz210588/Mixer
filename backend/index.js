@@ -442,6 +442,7 @@ app.get("/get/contractSends/CeX/:mycontract", async (req, res) => {
 })
 
 app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
+  
   const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
   const result = await client.fetch(query, params)
@@ -451,6 +452,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
   const provider = new ethers.providers.JsonRpcProvider(url)
   const wallet = new ethers.Wallet(privateKey, provider)
   const signer = wallet.connect(provider)
+  res.send("coming here!")
 
   const abi = [
     {
