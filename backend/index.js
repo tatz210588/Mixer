@@ -28,9 +28,7 @@ const web3 = new Web3()
 
 //middleware
 app.use(express.json())
-app.use(cors({
-  origin: "http://localhost:3000",
-}))
+app.use(cors())
 
 //routes
 app.get("/", async (req, res) => {
@@ -60,7 +58,7 @@ app.get("/get/contractDataResult/:mycontract", async (req, res) => {
     res.send(result)
 })    
 
-app.get("/get/contractData/:mycontract", async (req, res) => {
+app.put("/get/contractData/:mycontract", async (req, res) => {
     const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
     const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
     const result = await client.fetch(query, params)
@@ -438,7 +436,7 @@ app.get("/get/contractData/:mycontract", async (req, res) => {
     // res.send(result)
 })
 
-app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
+app.put("/get/contractSend/CeX/:mycontract", async (req, res) => {
   const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: true }
   const result = await client.fetch(query, params)
@@ -816,7 +814,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
   // res.send(result)
 })
 
-app.get("/get/contractSend/P2P/:mycontract", async (req, res) => {
+app.put("/get/contractSend/P2P/:mycontract", async (req, res) => {
   const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending', isCEX: false }
   const result = await client.fetch(query, params)
@@ -1194,7 +1192,7 @@ app.get("/get/contractSend/P2P/:mycontract", async (req, res) => {
   // res.send(result)
 })
 
-app.get("/get/contractCompliance/:mycontract", async (req, res) => {
+app.put("/get/contractCompliance/:mycontract", async (req, res) => {
   const query = '*[_type == "txTracker" && contract == $contractAddress && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'
   const params = { contractAddress: req.params.mycontract, status: 'pending' }
   const result = await client.fetch(query, params)
