@@ -773,7 +773,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
 
   // const payCeX = async () => {
       const network = await provider.getNetwork()
-      res.send(network)
+      
       // console.log(network)
       // const CurrNet = network?.chainId;
       // console.log(CurrNet)
@@ -782,7 +782,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
       abi,
       signer
       )
-      
+      res.send("contract")
       // console.log(signer.address)
       if (result.length>0) {
           for(let i=0; i<result.length; i++) {
