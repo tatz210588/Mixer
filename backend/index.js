@@ -436,6 +436,10 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
     // res.send(result)
 })
 
+app.get("/get/contractSends/CeX/:mycontract", async (req, res) => {
+  console.log("coming here! ", req.params.mycontract)
+})
+
 app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
   console.log("cominghere")
   const query = '*[_type == "txTracker" && contract == $contractAddress && isCEX == $isCEX && status == $status] {_id,from,to,contract,amount,coin,tokenAddress}'

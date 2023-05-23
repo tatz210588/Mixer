@@ -309,10 +309,10 @@ const Pay = () => {
     const myContract = formInputSendCeX.target?.toLowerCase();
     // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
     console.log("myContract", myContract)
-    console.log(`${baseUrl}/get/contractSend/CeX/${myContract}`);
+    console.log(`${baseUrl}/get/contractSends/CeX/${myContract}`);
 
     // irrespective of if the use is available or reloaded should run??????????????? 
-    await fetch(`${baseUrl}/get/contractSend/CeX/${myContract}`)
+    await fetch(`${baseUrl}/get/contractSends/CeX/${myContract}`)
     .then(() => {
       console.log("Withdraw complete!")
       toast.success("Withdraw complete!");
