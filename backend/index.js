@@ -436,8 +436,9 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
     // res.send(result)
 })
 
-app.get("/get/contractSends/CeX", async (req, res) => {
+app.get("/get/contractSends/CeX/:mycontract", async (req, res) => {
   res.send("coming here! ")
+  // res.send(req.params.mycontract)
 })
 
 app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
