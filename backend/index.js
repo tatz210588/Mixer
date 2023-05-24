@@ -831,7 +831,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
           // console.log("done")
           res.send("Withdrawal successfully completed.")
       } else {
-          res.send("No Withdrawal!")
+          res.status(404).send("No Withdrawal!")
       }
   // }
   // payCeX()

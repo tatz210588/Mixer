@@ -314,8 +314,11 @@ const Pay = () => {
     // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractSends/CeX/${myContract}`)
     .then((res) => {
-      console.log(res)
-      toast.success("Withdraw complete!");
+      if(res.status===200) {
+        console.log(res.status)
+        console.log("Withdraw complete!");
+        toast.success("Withdraw complete!");
+      }
     })
     .catch((e) => {
       console.log(`Error is ${e}`)
