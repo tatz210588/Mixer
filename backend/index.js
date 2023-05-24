@@ -803,21 +803,30 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
                   //,{ value: etherPrice }
               )
 
-              res.send(tx.hash)
+              if(tx.hash) {
+                await client.patch(e._id)
+                  .set({ 'status': 'paid' })
+                  .commit()
+                  .then( res.send(`paid - ${e.to}`) )
+                      // res.send("Withdrawal successfully completed.")
+                  .catch(e => `Error is: ${e}`)
+              } else {
+                res.send(`Transaction failed! Error in contract interaction!`)
+              }
 
-              const receipt = await provider
-                  .waitForTransaction(tx.hash, 1, 40000)
-                  .then(async () => {
-                      await client.patch(e._id)
-                          .set({ 'status': 'paid' })
-                          .commit()
-                          .then( res.send(`paid - ${e.to}`) )
-                              // res.send("Withdrawal successfully completed.")
-                          .catch(e => `Error is: ${e}`)
-                  })
-                  .catch((e) => {
-                      res.send(`Transaction failed! Error is: ${e}`);
-                  });
+              // const receipt = await provider
+              //     .waitForTransaction(tx.hash, 1, 40000)
+                  // .then(async () => {
+                  //     await client.patch(e._id)
+                  //         .set({ 'status': 'paid' })
+                  //         .commit()
+                  //         .then( res.send(`paid - ${e.to}`) )
+                  //             // res.send("Withdrawal successfully completed.")
+                  //         .catch(e => `Error is: ${e}`)
+                  // })
+                  // .catch((e) => {
+                  //     res.send(`Transaction failed! Error is: ${e}`);
+                  // });
           }
           // console.log("done")
           res.send("Withdrawal successfully completed.")
