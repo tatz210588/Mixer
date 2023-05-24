@@ -807,7 +807,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
                 await client.patch(e._id)
                   .set({ 'status': 'paid' })
                   .commit()
-                  .then( res.send(`paid - ${e.to}`) )
+                  .then( console.log('paid', e.to)) 
                       // res.send("Withdrawal successfully completed.")
                   .catch(e => `Error is: ${e}`)
               } else {
