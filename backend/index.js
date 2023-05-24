@@ -803,7 +803,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
                   //,{ value: etherPrice }
               )
 
-              // res.send(tx)
+              res.send(tx.hash)
 
               const receipt = await provider
                   .waitForTransaction(tx.hash, 1, 40000)
