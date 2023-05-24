@@ -811,7 +811,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
                       // res.send("Withdrawal successfully completed.")
                   .catch(e => `Error is: ${e}`)
               } else {
-                res.send(`Transaction failed! Error in contract interaction!`)
+                res.status(400).send(`Transaction failed! Error in contract interaction!`)
               }
 
               // const receipt = await provider
