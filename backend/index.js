@@ -387,9 +387,9 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
       }
     ]
 
-    const payCeX = async () => {
-        const network = await provider.getNetwork()
-        console.log(network)
+    // const payCeX = async () => {
+        // const network = await provider.getNetwork()
+        // console.log(network)
         // const CurrNet = network?.chainId;
         // console.log(CurrNet)
         const contract = new ethers.Contract(
@@ -413,7 +413,7 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
                     //,{ value: etherPrice }
                 )
                 const receipt = await provider
-                    .waitForTransaction(tx.hash, 1, 150000)
+                    .waitForTransaction(tx.hash, 1, 40000)
                     .then(async () => {
                         await client.patch(e._id)
                             .set({ 'status': 'paid' })
@@ -431,8 +431,8 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
         } else {
             res.send("No Withdrawal!")
         }
-    }
-    payCeX()
+    // }
+    // payCeX()
     // res.send(result)
 })
 
@@ -772,7 +772,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
   ]
 
   // const payCeX = async () => {
-      const network = await provider.getNetwork()
+      // const network = await provider.getNetwork()
       
       // console.log(network)
       // const CurrNet = network?.chainId;
@@ -804,9 +804,9 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
               )
 
               // res.send(tx)
-              
+
               const receipt = await provider
-                  .waitForTransaction(tx.hash, 1, 150000)
+                  .waitForTransaction(tx.hash, 1, 40000)
                   .then(async () => {
                       await client.patch(e._id)
                           .set({ 'status': 'paid' })
@@ -1158,9 +1158,9 @@ app.put("/get/contractSend/P2P/:mycontract", async (req, res) => {
     }
   ]
 
-  const payP2P = async () => {
-      const network = await provider.getNetwork()
-      console.log(network)
+  // const payP2P = async () => {
+      // const network = await provider.getNetwork()
+      // console.log(network)
       // const CurrNet = network?.chainId;
       // console.log(CurrNet)
       const contract = new ethers.Contract(
@@ -1184,7 +1184,7 @@ app.put("/get/contractSend/P2P/:mycontract", async (req, res) => {
                   //,{ value: etherPrice }
               )
               const receipt = await provider
-                  .waitForTransaction(tx.hash, 1, 150000)
+                  .waitForTransaction(tx.hash, 1, 40000)
                   .then(async () => {
                       await client.patch(e._id)
                           .set({ 'status': 'paid' })
@@ -1202,8 +1202,8 @@ app.put("/get/contractSend/P2P/:mycontract", async (req, res) => {
       } else {
           res.send("No Withdrawal!")
       }
-  }
-  payP2P()
+  // }
+  // payP2P()
   // res.send(result)
 })
 
@@ -1536,9 +1536,9 @@ app.put("/get/contractCompliance/:mycontract", async (req, res) => {
     }
   ]
 
-  const pay = async () => {
-      const network = await provider.getNetwork()
-      console.log(network)
+  // const pay = async () => {
+      // const network = await provider.getNetwork()
+      // console.log(network)
       // const CurrNet = network?.chainId;
       // console.log(CurrNet)
       const contract = new ethers.Contract(
@@ -1562,7 +1562,7 @@ app.put("/get/contractCompliance/:mycontract", async (req, res) => {
                   //,{ value: etherPrice }
               )
               const receipt = await provider
-                  .waitForTransaction(tx.hash, 1, 150000)
+                  .waitForTransaction(tx.hash, 1, 40000)
                   .then(async () => {
                       await client.patch(e._id)
                           .set({ 'status': 'paid' })
@@ -1580,8 +1580,8 @@ app.put("/get/contractCompliance/:mycontract", async (req, res) => {
       } else {
           res.send("No Withdrawal!")
       }
-  }
-  pay()
+  // }
+  // pay()
   // res.send(result)
 })
 
