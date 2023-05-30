@@ -119,11 +119,11 @@ const Pay = () => {
     console.log(owner)
     console.log(myAddress)
     // if (owner === myAddress) {
-      setOwner(true)
+    setOwner(true)
     // } else {
     //   setOwner(false)
     // }
-  }; 
+  };
 
   const saveTransaction = async (innerContract: any) => {
     await (window as any).ethereum.send("eth_requestAccounts"); // opens up metamask extension and connects Web2 to Web3
@@ -250,7 +250,7 @@ const Pay = () => {
                   } else {
                     console.log("contract", e.contract);
                     console.log("e: ", e);
-                    console.log("toAddress: ",  myAddress);
+                    console.log("toAddress: ", myAddress);
                     tx = await contract.withdraw(
                       e.contract,
                       tokenAddr,
@@ -295,14 +295,14 @@ const Pay = () => {
 
     // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractData/${myContract}`)
-    .then(() => {
-      console.log("Withdraw complete!")
-      toast.success("Withdraw complete!");
-    })
-    .catch((e) => {
-      console.log(`Error is ${e}`)
-      toast.error(`Error is ${e}`);
-    });
+      .then(() => {
+        console.log("Withdraw complete!")
+        toast.success("Withdraw complete!");
+      })
+      .catch((e) => {
+        console.log(`Error is ${e}`)
+        toast.error(`Error is ${e}`);
+      });
   }
 
   async function forceSendCEX() {
@@ -314,17 +314,14 @@ const Pay = () => {
 
     // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractSend/CeX/${myContract}`)
-    .then((res) => {
-      if(res.status===200) {
-        console.log(res.status)
-        console.log("Withdraw complete!");
+      .then(() => {
+        console.log("Withdraw complete!")
         toast.success("Withdraw complete!");
-      }
-    })
-    .catch((e) => {
-      console.log(`Error is ${e}`)
-      toast.error(`Error is ${e}`);
-    });
+      })
+      .catch((e) => {
+        console.log(`Error is ${e}`)
+        toast.error(`Error is ${e}`);
+      });
   }
 
   async function forceSendP2P() {
@@ -336,14 +333,14 @@ const Pay = () => {
 
     // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractSend/P2P/${myContract}`)
-    .then(() => {
-      console.log("Withdraw complete!")
-      toast.success("Withdraw complete!");
-    })
-    .catch((e) => {
-      console.log(`Error is ${e}`)
-      toast.error(`Error is ${e}`);
-    });
+      .then(() => {
+        console.log("Withdraw complete!")
+        toast.success("Withdraw complete!");
+      })
+      .catch((e) => {
+        console.log(`Error is ${e}`)
+        toast.error(`Error is ${e}`);
+      });
   }
 
   async function withdrawForCompliance() {
@@ -356,14 +353,14 @@ const Pay = () => {
 
     // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractCompliance/${myContract}`)
-    .then(() => {
-      console.log("Withdraw complete!")
-      toast.success("Withdraw complete!");
-    })
-    .catch((e) => {
-      console.log(`Error is ${e}`)
-      toast.error(`Error is ${e}`);
-    });
+      .then(() => {
+        console.log("Withdraw complete!")
+        toast.success("Withdraw complete!");
+      })
+      .catch((e) => {
+        console.log(`Error is ${e}`)
+        toast.error(`Error is ${e}`);
+      });
   }
 
   async function transfer(e: any) {
@@ -435,9 +432,9 @@ const Pay = () => {
 
           await saveTransaction(nextContractAddress as any);
 
-          console.log("next",nextContractAddress)
+          console.log("next", nextContractAddress)
           // console.log("prev",prevContract)
-          console.log("inner",innerContract)
+          console.log("inner", innerContract)
 
           // const innContract = '0x3b6538817a289669eaac0771adaf15e110911033'
           // await withdrawCEX(innContract)
@@ -518,7 +515,7 @@ const Pay = () => {
         <div className={style.container}>
           <div className={style.contentWrapper}>
             <div className={style.glowDivBox}>
-              <div className="relative h-[full] w-[95%] justify-center rounded-lg bg-lime-100	 px-7 py-9  text-center leading-none lg:w-full">
+              <div className="relative h-[full] w-[95%] justify-center rounded-lg bg-lime-100	 px-7 py-9  text-center leading-none lg:w-full ">
                 <>
                   <div className={style.details}>
                     <span className="flex flex-wrap justify-center space-x-5 ">
@@ -720,7 +717,7 @@ const Pay = () => {
             </div>
             {withdrawPanel && (
               <div className={style.glowDivBox}>
-                <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full">
+                <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full ">
                   <>
                     <div className={style.details}>
                       <span className="flex flex-wrap justify-center space-x-5">
@@ -799,188 +796,188 @@ const Pay = () => {
             )}
           </div>
           {owner && (
-            <>
-            <div className={style.glowDivBox}>
-              <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full">
-                <>
-                  <div className={style.details}>
-                    <span className="flex flex-wrap justify-center space-x-5">
-                      <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
-                        Force Send CeX
-                      </span>
-                    </span>
-                    <span className="flex flex-wrap items-center justify-center space-x-5">
-                      <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
-                        Force send the CeX transactions to the wallet even before the contract is full
-                      </span>
-                    </span>
-                  </div>
-
-                  <div className="font-bold drop-shadow-xl">
-
-                    {loadingState === true ? (
-                      <div>
-                        <ClipLoader color="#000000" size={15} />
-                        Connecting to blockchain. Please wait
-                      </div>
-                    ) : (
-                      <>
-                        <div className={style.info}>
-                        <div className={style.infoLeft}>
-                          <div className="mt-4 text-sm font-bold text-[#000000]">
-                            Contract Address:
-                          </div>
-                        </div>
-                        </div>
-                        <div className={style.searchBar}>
-                          <input
-                            type="text"
-                            className={style.searchInput}
-                            placeholder=""
-                            required
-                            value={formInputSendCeX.target}
-                            onChange={(e) =>
-                              updateFormInputSendCeX((formInputSendCeX) => ({
-                                ...formInputSendCeX,
-                                target: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <button
-                          type="submit"
-                          onClick={forceSendCEX}
-                          className={style.nftButton}
-                        >
+            <div className="lg:flex lg:justify-center lg:items-center">
+              <div className={style.glowDivBox}>
+                <div className="relative m-0 mt-3 w-[80%] md:w-[80%] lg:w-[80%] mx-auto rounded-lg bg-lime-100 px-7 py-9 text-center leading-none ">
+                  <>
+                    <div className={style.details}>
+                      <span className="flex flex-wrap justify-center space-x-5">
+                        <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
                           Force Send CeX
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </>
-              </div>
-            </div>
-            <div className={style.glowDivBox}>
-              <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full">
-                <>
-                  <div className={style.details}>
-                    <span className="flex flex-wrap justify-center space-x-5">
-                      <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
-                        Force Send P2P
+                        </span>
                       </span>
-                    </span>
-                    <span className="flex flex-wrap items-center justify-center space-x-5">
-                      <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
-                        Force send the P2P transactions to the wallet even before the contract is full
+                      <span className="flex flex-wrap items-center justify-center space-x-5">
+                        <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
+                          Force send the CeX transactions to the wallet even before the contract is full
+                        </span>
                       </span>
-                    </span>
-                  </div>
+                    </div>
 
-                  <div className="font-bold drop-shadow-xl">
+                    <div className="font-bold drop-shadow-xl">
 
-                    {loadingState === true ? (
-                      <div>
-                        <ClipLoader color="#000000" size={15} />
-                        Connecting to blockchain. Please wait
-                      </div>
-                    ) : (
-                      <>
-                        <div className={style.info}>
-                        <div className={style.infoLeft}>
-                          <div className="mt-4 text-sm font-bold text-[#000000]">
-                            Contract Address:
+                      {loadingState === true ? (
+                        <div>
+                          <ClipLoader color="#000000" size={15} />
+                          Connecting to blockchain. Please wait
+                        </div>
+                      ) : (
+                        <>
+                          <div className={style.info}>
+                            <div className={style.infoLeft}>
+                              <div className="mt-4 text-sm font-bold text-[#000000]">
+                                Contract Address:
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        </div>
-                        <div className={style.searchBar}>
-                          <input
-                            type="text"
-                            className={style.searchInput}
-                            placeholder=""
-                            required
-                            value={formInputSendP2P.target}
-                            onChange={(e) =>
-                              updateFormInputSendP2P((formInputSendP2P) => ({
-                                ...formInputSendP2P,
-                                target: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <button
-                          type="submit"
-                          onClick={forceSendP2P}
-                          className={style.nftButton}
-                        >
+                          <div className={style.searchBar}>
+                            <input
+                              type="text"
+                              className={style.searchInput}
+                              placeholder=""
+                              required
+                              value={formInputSendCeX.target}
+                              onChange={(e) =>
+                                updateFormInputSendCeX((formInputSendCeX) => ({
+                                  ...formInputSendCeX,
+                                  target: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            onClick={forceSendCEX}
+                            className={style.nftButton}
+                          >
+                            Force Send CeX
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </>
+                </div>
+              </div>
+              <div className={style.glowDivBox}>
+                <div className="relative m-0 mt-3 w-[80%] md:w-[80%] lg:w-[80%] mx-auto rounded-lg bg-lime-100 px-7 py-9 text-center leading-none">
+                  <>
+                    <div className={style.details}>
+                      <span className="flex flex-wrap justify-center space-x-5">
+                        <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
                           Force Send P2P
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </>
-              </div>
-            </div>
-            <div className={style.glowDivBox}>
-              <div className="relative m-0 mt-3 h-[full] w-[95%] justify-center rounded-lg bg-lime-100 px-7 py-9 text-center leading-none md:ml-5 lg:w-full">
-                <>
-                  <div className={style.details}>
-                    <span className="flex flex-wrap justify-center space-x-5">
-                      <span className="pr-6 text-xl font-bold text-black lg:text-3xl">
-                        Withdraw Compliance
+                        </span>
                       </span>
-                    </span>
-                    <span className="flex flex-wrap items-center justify-center space-x-5">
-                      <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
-                        Withdraw Compliance transactions to the owner wallet
+                      <span className="flex flex-wrap items-center justify-center space-x-5">
+                        <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
+                          Force send the P2P transactions to the wallet even before the contract is full
+                        </span>
                       </span>
-                    </span>
-                  </div>
+                    </div>
 
-                  <div className="font-bold drop-shadow-xl">
+                    <div className="font-bold drop-shadow-xl">
 
-                    {loadingState === true ? (
-                      <div>
-                        <ClipLoader color="#000000" size={15} />
-                        Connecting to blockchain. Please wait
-                      </div>
-                    ) : (
-                      <>
-                        <div className={style.info}>
-                        <div className={style.infoLeft}>
-                          <div className="mt-4 text-sm font-bold text-[#000000]">
-                            Contract Address:
+                      {loadingState === true ? (
+                        <div>
+                          <ClipLoader color="#000000" size={15} />
+                          Connecting to blockchain. Please wait
+                        </div>
+                      ) : (
+                        <>
+                          <div className={style.info}>
+                            <div className={style.infoLeft}>
+                              <div className="mt-4 text-sm font-bold text-[#000000]">
+                                Contract Address:
+                              </div>
+                            </div>
                           </div>
+                          <div className={style.searchBar}>
+                            <input
+                              type="text"
+                              className={style.searchInput}
+                              placeholder=""
+                              required
+                              value={formInputSendP2P.target}
+                              onChange={(e) =>
+                                updateFormInputSendP2P((formInputSendP2P) => ({
+                                  ...formInputSendP2P,
+                                  target: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            onClick={forceSendP2P}
+                            className={style.nftButton}
+                          >
+                            Force Send P2P
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </>
+                </div>
+              </div>
+              <div className={style.glowDivBox}>
+                <div className="relative m-0 mt-3 w-[80%] md:w-[80%] lg:w-[80%] mx-auto rounded-lg bg-lime-100 px-7 py-9 text-center leading-none mb-5 mt-5">
+                  <>
+                    <div className={style.details}>
+                      <span className="flex flex-wrap justify-center space-x-5">
+                        <span className="pr-6 text-xl font-bold text-black lg:text-xl">
+                          Withdraw Compliance
+                        </span>
+                      </span>
+                      <span className="flex flex-wrap items-center justify-center space-x-5">
+                        <span className="mt-4 mb-3 justify-center text-center font-sans text-base font-semibold not-italic leading-5 text-[#111111]">
+                          Withdraw Compliance transactions to the owner wallet
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className="font-bold drop-shadow-xl">
+
+                      {loadingState === true ? (
+                        <div>
+                          <ClipLoader color="#000000" size={15} />
+                          Connecting to blockchain. Please wait
                         </div>
-                        </div>
-                        <div className={style.searchBar}>
-                          <input
-                            type="text"
-                            className={style.searchInput}
-                            placeholder=""
-                            required
-                            value={formInputCompliance.target}
-                            onChange={(e) =>
-                              updateFormInputCompliance((formInputCompliance) => ({
-                                ...formInputCompliance,
-                                target: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <button
-                          type="submit"
-                          onClick={withdrawForCompliance}
-                          className={style.nftButton}
-                        >
-                          withdraw For Compliance
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </>
+                      ) : (
+                        <>
+                          <div className={style.info}>
+                            <div className={style.infoLeft}>
+                              <div className="mt-4 text-sm font-bold text-[#000000]">
+                                Contract Address:
+                              </div>
+                            </div>
+                          </div>
+                          <div className={style.searchBar}>
+                            <input
+                              type="text"
+                              className={style.searchInput}
+                              placeholder=""
+                              required
+                              value={formInputCompliance.target}
+                              onChange={(e) =>
+                                updateFormInputCompliance((formInputCompliance) => ({
+                                  ...formInputCompliance,
+                                  target: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            onClick={withdrawForCompliance}
+                            className={style.nftButton}
+                          >
+                            withdraw For Compliance
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </>
+                </div>
               </div>
             </div>
-            </>
           )}
         </div>
       </div>
