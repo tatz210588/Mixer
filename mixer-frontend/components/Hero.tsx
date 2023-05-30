@@ -14,8 +14,9 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 // const baseUrl = "http://mixer-backend.vercel.app";
 // const baseUrl = "http://localhost:8284";
-const baseUrl = "http://mixer-rho.vercel.app";
+// const baseUrl = "https://mixer-rho.vercel.app";
 // const baseUrl = "https://mixer-weld.vercel.app";
+const baseUrl = "http://64.227.170.10";
 
 const style = {
   wrapper: `relative`,
