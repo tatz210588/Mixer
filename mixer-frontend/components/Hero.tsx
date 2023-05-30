@@ -14,8 +14,9 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 // const baseUrl = "http://mixer-backend.vercel.app";
 // const baseUrl = "http://localhost:8284";
-const baseUrl = "https://mixer-rho.vercel.app";
+// const baseUrl = "https://mixer-rho.vercel.app";
 // const baseUrl = "https://mixer-weld.vercel.app";
+const baseUrl = "http://64.227.170.10";
 
 const style = {
   wrapper: `relative`,
@@ -309,10 +310,10 @@ const Pay = () => {
     const myContract = formInputSendCeX.target?.toLowerCase();
     // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
     console.log("myContract", myContract)
-    console.log(`${baseUrl}/get/contractSends/CeX/${myContract}`);
+    console.log(`${baseUrl}/get/contractSend/CeX/${myContract}`);
 
     // irrespective of if the use is available or reloaded should run??????????????? 
-    await fetch(`${baseUrl}/get/contractSends/CeX/${myContract}`)
+    await fetch(`${baseUrl}/get/contractSend/CeX/${myContract}`)
     .then((res) => {
       if(res.status===200) {
         console.log(res.status)
