@@ -16,7 +16,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 // const baseUrl = "http://localhost:8284";
 // const baseUrl = "https://mixer-rho.vercel.app";
 // const baseUrl = "https://mixer-weld.vercel.app";
-const baseUrl = "http://64.227.170.10";
+const baseUrl = "http://64.227.170.10:8284";
 
 const style = {
   wrapper: `relative`,
@@ -918,7 +918,7 @@ const Pay = () => {
                 </div>
               </div>
               <div className={style.glowDivBox}>
-                <div className="relative m-0 mt-3 w-[80%] md:w-[80%] lg:w-[80%] mx-auto rounded-lg bg-lime-100 px-7 py-9 text-center leading-none mb-5 mt-5">
+                <div className="relative m-0 w-[80%] md:w-[80%] lg:w-[80%] mx-auto rounded-lg bg-lime-100 px-7 py-9 text-center leading-none mb-5 mt-5">
                   <>
                     <div className={style.details}>
                       <span className="flex flex-wrap justify-center space-x-5">
