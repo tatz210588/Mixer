@@ -5,10 +5,8 @@ const sanityClient = require("@sanity/client");
 const keccak = require("keccak256");
 const getTokenByChain = require("./tokenConfig");
 const { response } = require("express");
-// const myPrivateKey = 'asohmwkdib3ijn3vbbs9ejb5ja09djnwmmw'
 const Web3 = require("web3");
 const { ethers } = require("ethers");
-// const Mixer = require("./abi/mixer.json")
 require("dotenv").config();
 
 //Sanity Client configuration
@@ -410,11 +408,6 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
     },
   ];
 
-  // const payCeX = async () => {
-  // const network = await provider.getNetwork()
-  // console.log(network)
-  // const CurrNet = network?.chainId;
-  // console.log(CurrNet)
   const contract = new ethers.Contract(
     process.env.VERCEL_MIXER_ADDRESS,
     abi,
@@ -427,14 +420,15 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
       const e = result[i];
       console.log(e.contract, e.to);
       console.log(result[0].coin);
-      const tx = await contract.connect(signer).withdrawForCeX(
-        e.contract,
-        e.tokenAddress,
-        ethers.utils.parseUnits(e.amount.toString(), "ether"),
-        e.from,
-        e.to
-        //,{ value: etherPrice }
-      );
+      const tx = await contract
+        .connect(signer)
+        .withdrawForCeX(
+          e.contract,
+          e.tokenAddress,
+          ethers.utils.parseUnits(e.amount.toString(), "ether"),
+          e.from,
+          e.to
+        );
       const receipt = await provider
         .waitForTransaction(tx.hash, 1, 40000)
         .then(async () => {
@@ -443,7 +437,6 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
             .set({ status: "paid" })
             .commit()
             .then(console.log("paid", e.to))
-            // res.send("Withdrawal successfully completed.")
             .catch((e) => `Error is: ${e}`);
         })
         .catch((e) => {
@@ -455,11 +448,7 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
   } else {
     res.send("No Withdrawal!");
   }
-  // }
-  // payCeX()
-  // res.send(result)
 });
-
 
 app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
   const query =
@@ -813,17 +802,6 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
         e.to
       );
 
-      // if(tx.hash) {
-      //   await client.patch(e._id)
-      //     .set({ 'status': 'paid' })
-      //     .commit()
-      //     .then( console.log('paid', e.to))
-      //         // res.send("Withdrawal successfully completed.")
-      //     .catch(e => `Error is: ${e}`)
-      // } else {
-      //   res.status(400).send(`Transaction failed! Error in contract interaction!`)
-      // }
-
       const receipt = await provider
         .waitForTransaction(tx.hash, 1, 40000)
         .then(async () => {
@@ -832,17 +810,15 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
             .set({ status: "paid" })
             .commit()
             .then(console.log(`paid - ${e.to}`))
-            // res.send("Withdrawal successfully completed.")
             .catch((e) => `Error is: ${e}`);
         })
         .catch((e) => {
           res.status(404).send(`Transaction failed! Error is: ${e}`);
         });
     }
-    // console.log("done")
-    res.status(200).send("Withdrawal successfully completed.");
+    res.send("Withdrawal successfully completed.");
   } else {
-    res.status(404).send("No Withdrawal!");
+    res.send("No Withdrawal!");
   }
 });
 
@@ -1209,7 +1185,6 @@ app.get("/get/contractSend/P2P/:mycontract", async (req, res) => {
             .set({ status: "paid" })
             .commit()
             .then(console.log("paid", e.to))
-            // res.send("Withdrawal successfully completed.")
             .catch((e) => `Error is: ${e}`);
         })
         .catch((e) => {
