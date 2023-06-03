@@ -813,7 +813,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
             .catch((e) => `Error is: ${e}`);
         })
         .catch((e) => {
-          res.status(404).send(`Transaction failed! Error is: ${e}`);
+          console.log(`Transaction failed! Error is: ${e}`);
         });
     }
     res.send("Withdrawal successfully completed.");
