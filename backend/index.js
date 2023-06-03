@@ -84,8 +84,8 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
   };
   const result = await client.fetch(query, params);
   // ethers
-  const privateKey = process.env.VERCEL_PRIVATE_KEY;
-  const url = process.env.VERCEL_RPC_URL;
+  const privateKey = process.env.PRIVATE_KEY;
+  const url = process.env.RPC_URL;
   const provider = new ethers.providers.JsonRpcProvider(url);
   const wallet = new ethers.Wallet(privateKey, provider);
   const signer = wallet.connect(provider);
@@ -409,7 +409,7 @@ app.put("/get/contractData/:mycontract", async (req, res) => {
   ];
 
   const contract = new ethers.Contract(
-    process.env.VERCEL_MIXER_ADDRESS,
+    process.env.MIXER_ADDRESS,
     abi,
     signer
   );
@@ -460,8 +460,8 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
   };
   const result = await client.fetch(query, params);
   // ethers
-  const privateKey = process.env.VERCEL_PRIVATE_KEY;
-  const url = process.env.VERCEL_RPC_URL;
+  const privateKey = process.env.PRIVATE_KEY;
+  const url = process.env.RPC_URL;
   const provider = new ethers.providers.JsonRpcProvider(url);
   const wallet = new ethers.Wallet(privateKey, provider);
   const signer = wallet.connect(provider);
@@ -789,7 +789,7 @@ app.get("/get/contractSend/CeX/:mycontract", async (req, res) => {
       const e = result[i];
 
       const contract = new ethers.Contract(
-        process.env.VERCEL_MIXER_ADDRESS,
+        process.env.MIXER_ADDRESS,
         abi,
         signer
       );
@@ -832,8 +832,8 @@ app.get("/get/contractSend/P2P/:mycontract", async (req, res) => {
   };
   const result = await client.fetch(query, params);
   // ethers
-  const privateKey = process.env.VERCEL_PRIVATE_KEY;
-  const url = process.env.VERCEL_RPC_URL;
+  const privateKey = process.env.PRIVATE_KEY;
+  const url = process.env.RPC_URL;
   const provider = new ethers.providers.JsonRpcProvider(url);
   const wallet = new ethers.Wallet(privateKey, provider);
   const signer = wallet.connect(provider);
@@ -1157,7 +1157,7 @@ app.get("/get/contractSend/P2P/:mycontract", async (req, res) => {
   ];
 
   const contract = new ethers.Contract(
-    process.env.VERCEL_MIXER_ADDRESS,
+    process.env.MIXER_ADDRESS,
     abi,
     signer
   );
@@ -1204,8 +1204,8 @@ app.get("/get/contractCompliance/:mycontract", async (req, res) => {
   const params = { contractAddress: req.params.mycontract, status: "pending" };
   const result = await client.fetch(query, params);
   // ethers
-  const privateKey = process.env.VERCEL_PRIVATE_KEY;
-  const url = process.env.VERCEL_RPC_URL;
+  const privateKey = process.env.PRIVATE_KEY;
+  const url = process.env.RPC_URL;
   const provider = new ethers.providers.JsonRpcProvider(url);
   const wallet = new ethers.Wallet(privateKey, provider);
   const signer = wallet.connect(provider);
@@ -1529,7 +1529,7 @@ app.get("/get/contractCompliance/:mycontract", async (req, res) => {
   ];
 
   const contract = new ethers.Contract(
-    process.env.VERCEL_MIXER_ADDRESS,
+    process.env.MIXER_ADDRESS,
     abi,
     signer
   );
