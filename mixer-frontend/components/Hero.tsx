@@ -1,21 +1,14 @@
 import { useState, useEffect } from "react";
 import { getTokenByChain, TokenInfo } from "../assets/tokenConfig";
 import { getWalletTypeByChain, WalletInfo } from "../assets/walletTypeConfig";
-// import { useAccount, useNetwork } from "wagmi";
-// import { FaBackspace, FaMoneyBillWave } from "react-icons/fa";
 import Mixer from "../artifacts/contracts/Mixer.sol/Mixer.json";
 import Token from "../artifacts/contracts/erc20Token.sol/GLDToken.json";
 import toast from "react-hot-toast";
-// import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../config";
 import BigNumber from "bignumber.js";
 import ClipLoader from "react-spinners/ClipLoader";
 
-// const baseUrl = "http://mixer-backend.vercel.app";
-// const baseUrl = "http://localhost:8284";
-// const baseUrl = "https://mixer-rho.vercel.app";
-// const baseUrl = "https://mixer-weld.vercel.app";
 const baseUrl = "http://64.227.170.10:8284";
 
 const style = {
@@ -44,14 +37,12 @@ const defaults = {
 };
 
 const Pay = () => {
-  //const { chain, chains } = useNetwork();
   const [availableTokens, setAvailableTokens] = useState<TokenInfo[]>([]);
   const [availableWalletType, setAvailableWalletType] = useState<WalletInfo[]>(
     []
   );
   const [selectedWallet, setSelectedWallet] = useState<string>("");
   const [tokenAddr, setTokenAddr] = useState<string>("");
-  // const [toAddress, setToAddress] = useState<string>("");
   const [tokenMin, setTokenMin] = useState<string>("");
   const [tokenSym, setTokenSym] = useState<string>("");
   const [owner, setOwner] = useState<Boolean>(false);
@@ -203,8 +194,6 @@ const Pay = () => {
       var tx: any;
       console.log(`${baseUrl}/get/data/${myAddress}/${selectedOption}`);
 
-      // const theAddress:any = myAddress
-
       await fetch(`${baseUrl}/get/data/${myAddress}/${selectedOption}`)
         .then(async (result) => {
           await result.json().then((resp) => {
@@ -289,11 +278,9 @@ const Pay = () => {
 
   async function withdrawCEX(innerContract: any) {
     const myContract = innerContract?.toLowerCase();
-    // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
     console.log("myContract", myContract)
     console.log(`${baseUrl}/get/contractData/${myContract}`);
 
-    // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractData/${myContract}`)
       .then(() => {
         console.log("Withdraw complete!")
@@ -306,13 +293,10 @@ const Pay = () => {
   }
 
   async function forceSendCEX() {
-    // const myContract = innerContract?.toLowerCase();
     const myContract = formInputSendCeX.target?.toLowerCase();
-    // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
     console.log("myContract", myContract)
     console.log(`${baseUrl}/get/contractSend/CeX/${myContract}`);
 
-    // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractSend/CeX/${myContract}`)
       .then(() => {
         console.log("Withdraw complete!")
@@ -325,13 +309,10 @@ const Pay = () => {
   }
 
   async function forceSendP2P() {
-    // const myContract = innerContract?.toLowerCase();
     const myContract = formInputSendP2P.target?.toLowerCase();
-    // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
     console.log("myContract", myContract)
     console.log(`${baseUrl}/get/contractSend/P2P/${myContract}`);
 
-    // irrespective of if the use is available or reloaded should run??????????????? 
     await fetch(`${baseUrl}/get/contractSend/P2P/${myContract}`)
       .then(() => {
         console.log("Withdraw complete!")
@@ -344,14 +325,11 @@ const Pay = () => {
   }
 
   async function withdrawForCompliance() {
-    // const myContract = innerContract?.toLowerCase();
     const myContract = formInputCompliance.target?.toLowerCase();
-    formInputCompliance
-    // const myContract = '0x6cf991cbf1795846853a73d41f1e7918c0cd087a';
+
     console.log("myContract", myContract)
     console.log(`${baseUrl}/get/contractCompliance/${myContract}`);
-
-    // irrespective of if the use is available or reloaded should run??????????????? 
+ 
     await fetch(`${baseUrl}/get/contractCompliance/${myContract}`)
       .then(() => {
         console.log("Withdraw complete!")
@@ -396,7 +374,7 @@ const Pay = () => {
         signer
       );
       var tx;
-      const innerContract = await contract.getCurrentContract(); // check ----
+      const innerContract = await contract.getCurrentContract(); 
       console.log("my addr", innerContract);
       //await saveTransaction(innerContract as any);
 
@@ -408,7 +386,6 @@ const Pay = () => {
           "0x0000000000000000000000000000000000000000",
           0,
           formInput?.target,
-          // false,
           { value: etherPrice }
         );
       } else {
@@ -418,7 +395,6 @@ const Pay = () => {
           tokenAddr,
           ethers.utils.parseUnits(formInput?.amount.toString(), "ether"),
           formInput?.target,
-          // false,
           { value: etherPrice }
         );
       }
@@ -433,20 +409,14 @@ const Pay = () => {
           await saveTransaction(nextContractAddress as any);
 
           console.log("next", nextContractAddress)
-          // console.log("prev",prevContract)
           console.log("inner", innerContract)
-
-          // const innContract = '0x3b6538817a289669eaac0771adaf15e110911033'
-          // await withdrawCEX(innContract)
 
           if (nextContractAddress != innerContract) {
             console.log("contract updated!")
             await withdrawCEX(innerContract)
-            toast.success("All withdraw CeX done!")
+            console.log("All withdraw CeX done!")
+            // toast.success("All withdraw CeX done!")
           }
-          // if (selectedWallet != "Peer to Peer (P2P) Wallet") {
-          //   await withdraw(e);
-          // }
         })
         .catch((e) => {
           toast.error("Transaction failed.");
